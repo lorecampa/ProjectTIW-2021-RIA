@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<head>
+<title>Login</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script src="utils.js" charset="utf-8" defer></script>
+<script src="login.js" charset="utf-8" defer></script>
+</head>
+<body>
+
+
+	<h1>Welcome to Music Playlist application</h1>
+	
+    <p style = "color: red;" id = "errorMessage"></p>
+	<div id = "loginDiv">
+		<form action = "#">
+			<label>Email</label><input name = "email" type="text" required>
+			<label>Password</label><input name = "password" type = "password" required>
+			<input id = "loginButton" type = "button" value="login">
+		</form>
+		
+		<a id = "goToRegister" href="#">Are you still not registered? Do it now!</a>
+	</div>
+
+	<div id ="registrationDiv">
+		<form method= "POST" action="#">
+			<label>Username </label>
+			<input name = "username" type="text" required>
+			
+			<label>Email </label>
+			<input name = "email" type="text" required>
+			
+			<label>Password </label>
+			<input name = "password" type = "password" required >
+			
+			<label>Name </label>
+			<input name = "name" type = "text" required>
+			
+			<label>Surname </label>
+			<input name = "surname" type = "text" required>
+	
+			<input id ="registerButton" value = "register" type = "button">
+		</form>
+		<a id ="goToLogin" href="#"> Are you already registered? Go back to login page</a>
+	</div>
+	
+
+	
+</body>
+</html>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <display-name>TIW-Project-2021-MusicPlaylistRIA</display-name>
+  <context-param>
+    <param-name>dbUrl</param-name>
+    <param-value>jdbc:mysql://localhost:3306/MusicPlaylistdb?serverTimezone=UTC</param-value>
+  </context-param>
+  <context-param>
+    <param-name>dbUser</param-name>
+    <param-value>root</param-value>
+  </context-param>
+  <context-param>
+    <param-name>dbPassword</param-name>
+    <param-value>x3^AJy3h^3</param-value>
+  </context-param>
+  <context-param>
+    <param-name>dbDriver</param-name>
+    <param-value>com.mysql.cj.jdbc.Driver</param-value>
+  </context-param>
+  <context-param>
+    <param-name>imagePath</param-name>
+    <param-value>/Users/lorecampa/Documents/eclipseStoring/MusicPlaylist/images/</param-value>
+  </context-param>
+  <context-param>
+    <param-name>audioPath</param-name>
+    <param-value>/Users/lorecampa/Documents/eclipseStoring/MusicPlaylist/audio/</param-value>
+  </context-param>
+  
+  <filter>
+  	<filter-name>AlreadyLoggedChecker</filter-name>
+  	<filter-class>it.polimi.tiw.ria.filters.AlreadyLoggedChecker</filter-class>
+  </filter>
+  <filter>
+  	<filter-name>NotLoggedChecker</filter-name>
+  	<filter-class>it.polimi.tiw.ria.filters.NotLoggedChecker</filter-class>
+  </filter>
+  
+  <filter-mapping>
+  	<filter-name>AlreadyLoggedChecker</filter-name>
+  	<url-pattern>/CheckLogin</url-pattern>
+  	<url-pattern>/CreateUser</url-pattern>
+  </filter-mapping>
+  
+  <filter-mapping>
+  	<filter-name>NotLoggedChecker</filter-name>
+  	<url-pattern>/GetSongsOfPlaylist</url-pattern>
+  	<url-pattern>/GetUserPlaylist</url-pattern>  	
+  </filter-mapping>
+
+  <welcome-file-list>
+    <welcome-file>LoginPage.html</welcome-file>
+  </welcome-file-list>
+  
+  
+</web-app>

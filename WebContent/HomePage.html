@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HomePage</title>
+</head>
+
+<script src="utils.js" charset="utf-8" defer></script>
+<script src="homePage.js" charset="utf-8" defer></script>
+<body>
+
+	<ul>
+        <li id = "personalMessage"><h2></h2></li>
+		<li id ="homePageBtnContainer" style="float: left;">
+			<form action = "#">
+				<input type="button" value="HomePage" />
+			</form>
+		</li>
+        <li id ="logoutBtnContainer" style="float: right;">
+			<form action = "#">
+				<input type="button" value="Logout" />
+			</form>
+		</li>
+    </ul> 
+
+	<table id ="userPlaylistsBox">
+		<thead>
+			<tr>
+				<th>Playlists</th>
+				<th>Date</th>
+				<th>Reorder</th>
+			</tr>
+		</thead>
+		<tbody id ="userPlaylistsBody"></tbody>
+	</table>
+	
+	
+	<div id ="createPlaylistBox">
+		<h3>Create Playlist</h3>
+		<form method= "POST" action = "#">
+			<label>Title </label><input name = "name" type="text" required>
+			<input value = "create" type = "button">
+		</form>
+	</div>
+	
+	<div id = "createSongBox">
+		<h2>Create Song</h2>
+    	<form method= "POST" action = "#">
+			<label>Title</label> 
+			<input name = "title" id="title" type="text" required>
+
+			<label>Albums </label>
+			<select name= "albums"  required>
+			</select>
+
+			<input name = "audio" type="file"required>
+				Audio Upload
+			<input value = "create" type = "button">		
+		</form>  
+	</div>
+	        
+
+	
+	<div id = "createAlbumBox">
+		<form method= "POST" action = "#" enctype="multipart/form-data">
+			<h2>Create Album</h2>
+	
+			<p>Title</p> 
+			<input name = "title" type="text" required>
+	
+			<p>Interpreter</p> 
+			<input name = "interpreter" type="text" required>
+	
+			<p>Year</p> 
+			<input name = "year" type="number" min=0 required>
+	
+			<p>Genre</p>
+			<select name= "genre" required>
+			</select>
+	
+			<div>
+				<input name = "picture" type="file" required>
+				Image Upload
+			</div>
+			
+			<input value = "createAlbum" type = "button">		
+		</form>
+	</div>
+	
+	
+	
+
+
+	<div id="playlistBox">
+		<h3></h3>
+		<table>
+			<thead>
+				<tr></tr>
+			</thead>
+			<tbody>
+				<tr></tr>
+			</tbody>
+		</table>
+
+		<form action = "#">
+			<input id = "prevBtn" value = "Prev" type = "button">	
+		</form>
+		
+		<form action = "#">
+			<input id="nextBtn" value = "Next" type = "button">	
+		</form>
+
+		<div id = "addSongToPlaylist">
+			<h2>Add Song to Playlist</h2>
+			<form method= "POST" action = "#">
+				<p>Songs created</p>
+				<select class = "custom-select" name= "songs" required>
+				</select>
+				<input value = "add to playlist" type = "button">
+			</form>
+		</div>
+
+	</div>
+	
+</body>
+</html>
