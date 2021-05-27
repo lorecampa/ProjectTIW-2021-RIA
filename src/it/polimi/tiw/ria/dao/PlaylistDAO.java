@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import it.polimi.tiw.ria.beans.Album;
 import it.polimi.tiw.ria.beans.Playlist;
 import it.polimi.tiw.ria.beans.Song;
 import it.polimi.tiw.ria.beans.User;
@@ -40,10 +43,10 @@ public class PlaylistDAO {
 	}
 	
 	
-	public ArrayList<Song> findPlaylistSongs(int idPlaylist) throws SQLException{
-		ArrayList<Song> songs = new ArrayList<>();
+	public HashMap<Song, Album> findPlaylistSongs(int idPlaylist) throws SQLException{
+		HashMap<Song, Album> songs = new HashMap<>();
 		
-		String query = "SELECT s.title, s.songUrl, a.title, a.interpreter, a.year, a.genre, a.idCreator, a.imageUrl FROM MusicPlaylistdb.Playlist as p, MusicPlaylistdb.MatchOrder as m, MusicPlaylistdb.Song as s, MusicPlaylistdb.Album as a\n"
+		String query = "SELECT s.title, s.songUrl, a.title, a.interpreter, a.year, a.genre, a.idCreator, a.imageUrl, a.id, s.id FROM MusicPlaylistdb.Playlist as p, MusicPlaylistdb.MatchOrder as m, MusicPlaylistdb.Song as s, MusicPlaylistdb.Album as a\n"
 				+ "WHERE p.id = ? and p.id = m.idPlaylist and s.id = m.idSong and s.idAlbum = a.id and p.idCreator = a.idCreator";
 		
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
@@ -51,15 +54,21 @@ public class PlaylistDAO {
 			try (ResultSet result = pstatement.executeQuery();) {
 				while(result.next()) {
 					Song song = new Song();
-					song.setTitleSong(result.getString(1));
+					Album album = new Album();
+					
+					
+					song.setTitle(result.getString(1));
 					song.setSongUrl(result.getString(2));
-					song.setTitleAlbum(result.getString(3));
-					song.setInterpreterAlbum(result.getString(4));
-					song.setYearAlbum(result.getShort(5));
-					song.setGenreAlbum(result.getString(6));
-					song.setIdCreator(result.getInt(7));
-					song.setImageUrl(result.getString(8));
-					songs.add(song);
+					album.setTitle(result.getString(3));
+					album.setInterpreter(result.getString(4));
+					album.setYear(result.getShort(5));
+					album.setGenre(result.getString(6));
+					album.setIdCreator(result.getInt(7));
+					album.setImageUrl(result.getString(8));
+					album.setId(result.getInt(9));
+					song.setIdAlbum(result.getInt(9));
+					song.setId(result.getInt(10));
+					songs.put(song, album);
 				}
 			}
 		}
@@ -85,8 +94,8 @@ public class PlaylistDAO {
 			try (ResultSet result = pstatement.executeQuery();) {
 				while(result.next()) {
 					Song song = new Song();
-					song.setIdSong(result.getInt(1));
-					song.setTitleSong(result.getString(2));
+					song.setId(result.getInt(1));
+					song.setTitle(result.getString(2));
 					songs.add(song);
 				}
 			}

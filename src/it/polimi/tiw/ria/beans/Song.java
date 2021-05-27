@@ -1,86 +1,71 @@
 package it.polimi.tiw.ria.beans;
 
 public class Song{
-	private int idSong;
-	private String titleSong;
+	
+	private int id;
+	private String title;
 	private String songUrl;
-	private String titleAlbum;
-	private String interpreterAlbum;
-	private short yearAlbum;
-	private String genreAlbum;
-	private Integer idCreator;
-	private String imageUrl;
+	private int idAlbum;
+	
 	
 	
 	public Song() {
 		super();
 	}
 	
-	
-	
-	public int getIdSong() {
-		return idSong;
+	public Song(String title, String songUrl, int idAlbum) {
+		this.title = title;
+		this.songUrl = songUrl;
+		this.idAlbum = idAlbum;
 	}
 
 
 
-	public void setIdSong(int idSong) {
-		this.idSong = idSong;
+	public int getId() {
+		return id;
 	}
 
 
 
-	public String getTitleSong() {
-		return titleSong;
+	public void setId(int id) {
+		this.id = id;
 	}
-	public void setTitleSong(String titleSong) {
-		this.titleSong = titleSong;
+
+
+
+	public String getTitle() {
+		return title;
 	}
+
+
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+
+
 	public String getSongUrl() {
 		return songUrl;
 	}
+
+
+
 	public void setSongUrl(String songUrl) {
 		this.songUrl = songUrl;
 	}
-	public String getTitleAlbum() {
-		return titleAlbum;
-	}
-	public void setTitleAlbum(String titleAlbum) {
-		this.titleAlbum = titleAlbum;
-	}
-	public String getInterpreterAlbum() {
-		return interpreterAlbum;
-	}
-	public void setInterpreterAlbum(String interpreterAlbum) {
-		this.interpreterAlbum = interpreterAlbum;
-	}
-	public short getYearAlbum() {
-		return yearAlbum;
-	}
-	public void setYearAlbum(short yearAlbum) {
-		this.yearAlbum = yearAlbum;
-	}
-	public String getGenreAlbum() {
-		return genreAlbum;
-	}
-	public void setGenreAlbum(String genreAlbum) {
-		this.genreAlbum = genreAlbum;
-	}
-	public Integer getIdCreator() {
-		return idCreator;
-	}
-	public void setIdCreator(Integer idCreator) {
-		this.idCreator = idCreator;
-	}
-	public String getImageUrl() {
-		return imageUrl;
-	}
-	public void setImageUrl(String imageUrl) {
-		this.imageUrl = imageUrl;
-	}
-	
 
-	
+
+
+	public int getIdAlbum() {
+		return idAlbum;
+	}
+
+
+
+	public void setIdAlbum(int idAlbum) {
+		this.idAlbum = idAlbum;
+	}
 	
 	
 	

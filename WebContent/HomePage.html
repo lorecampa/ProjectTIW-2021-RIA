@@ -38,6 +38,8 @@
 	<div id ="createPlaylistBox">
 		<h3>Create Playlist</h3>
 		<form method= "POST" action = "#">
+			<p class = "customMsg"></p>
+
 			<label>Title </label><input name = "name" type="text" required>
 			<input value = "create" type = "button">
 		</form>
@@ -46,12 +48,13 @@
 	<div id = "createSongBox">
 		<h2>Create Song</h2>
     	<form method= "POST" action = "#">
+			<p class = "customMsg"></p>
+
 			<label>Title</label> 
 			<input name = "title" id="title" type="text" required>
 
 			<label>Albums </label>
-			<select name= "albums"  required>
-			</select>
+			<select name= "albums"  required></select>
 
 			<input name = "audio" type="file"required>
 				Audio Upload
@@ -62,9 +65,10 @@
 
 	
 	<div id = "createAlbumBox">
+		<h2>Create Album</h2>
 		<form method= "POST" action = "#" enctype="multipart/form-data">
-			<h2>Create Album</h2>
-	
+			<p class = "customMsg"></p>
+
 			<p>Title</p> 
 			<input name = "title" type="text" required>
 	
@@ -76,6 +80,17 @@
 	
 			<p>Genre</p>
 			<select name= "genre" required>
+				<option value= "Rock">Rock</option>
+				<option value= "Pop">Pop</option>
+				<option value= "Electronic">Electronic</option>
+				<option value= "Soul">Soul</option>
+				<option value= "Funk">Funk</option>
+				<option value= "Country">Country</option>
+				<option value= "Latin">Latin</option>
+				<option value= "Reggae">Raggae</option>
+				<option value= "Hip Hop">Hip Hop</option>
+				<option value= "Punk">Punk</option>
+				<option value= "Polka">Polka</option>                 
 			</select>
 	
 			<div>
@@ -110,12 +125,13 @@
 			<input id="nextBtn" value = "Next" type = "button">	
 		</form>
 
-		<div id = "addSongToPlaylist">
+		<div id = "addSongToPlaylist" enctype="multipart/form-data">
 			<h2>Add Song to Playlist</h2>
 			<form method= "POST" action = "#">
+				<p class = "customMsg"></p>
+
 				<p>Songs created</p>
-				<select class = "custom-select" name= "songs" required>
-				</select>
+				<select class = "custom-select" name= "songs" required></select>
 				<input value = "add to playlist" type = "button">
 			</form>
 		</div>

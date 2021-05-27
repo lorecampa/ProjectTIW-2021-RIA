@@ -32,7 +32,7 @@
         var nextBtn  = document.getElementById("nextBtn");
         playlistBox.querySelector("h3").innerHTML = "";
 
-        var currSongs;
+        var currSongsMap;
         var prevIdx = 0;
         var nextIdx = 5;
         var self = this;
@@ -49,7 +49,7 @@
             makeCall("GET", "GetSongsOfPlaylist?idPlaylist="+playlist.id, null, function(req){
                 if (req.readyState == 4){
                     if(req.status == 200){
-                        currSongs = JSON.parse(req.responseText);
+                        currSongsMap = JSON.parse(req.responseText);
                         self.update();
                     }else{
                         handleCustomRedirect(req.status);
@@ -74,21 +74,24 @@
             this.reset();
             var rowHead = playlistBox.querySelector("thead > tr");
             var rowBody = playlistBox.querySelector("tbody > tr");
-            var size = currSongs.length;
+            var size = currSongsMap.length;
             if (size == 0){
                 //TODO insert message
                 return;
             }else{
                 this.controlButtonVisibility(size);
             }
+
             for (let i = prevIdx; i < nextIdx && i < size; i++){
-                var song = currSongs[i];
+                var song = currSongsMap[i][0];
+                var album = currSongsMap[i][1];
+
                 var title = document.createElement("td");
                 var linkTitle = document.createElement("a");
-                linkTitle.appendChild(document.createTextNode(song.titleSong));
+                linkTitle.appendChild(document.createTextNode(song.title));
                 linkTitle.addEventListener("click", () =>{
                     console.log("TODO");
-                    //TODO
+                    //TODO player page
                 });
                 linkTitle.href = "#";
                 title.appendChild(linkTitle);
@@ -96,8 +99,8 @@
 
                 var imageContainer = document.createElement("td");
                 var image = document.createElement("img");
-                image.src = "ShowFile/image_" + song.imageUrl;
-                image.alt = song.imageUrl;
+                image.src = "ShowFile/image_" + album.imageUrl;
+                image.alt = album.imageUrl;
                 image.setAttribute("width", "250px");
                 image.setAttribute("height", "250px");
                 imageContainer.appendChild(image);
@@ -115,8 +118,8 @@
             var select = addSongToPlaylistBox.querySelector("select");
             songs.forEach(x => {
                 var option = document.createElement("option");
-                option.text = x.titleSong;
-                option.value = x.idSong;
+                option.text = x.title;
+                option.value = x.id;
                 select.appendChild(option);
             })
 
@@ -156,6 +159,20 @@
             nextBtn.addEventListener("click", () =>{
                 this.nextSlide();
             })
+            addSongToPlaylistBox.querySelector("input[type='button']").addEventListener("click", (e)=>{
+                makeCall("GET", "AddSongToPlaylist?idPlaylist=" + playlist.id, new FormData(e.target.closest("form")), function(req){
+                    if (req.readyState == 4){
+                        if(req.status == 200){
+                            //message of good result
+                            self.update();
+                            
+                        }else{
+                            //TODO change 
+                            handleCustomRedirect(req.status);
+                        }
+                    }
+                });
+            });
         }
 
         this.hide = function(){
@@ -166,7 +183,6 @@
             playlistBox.querySelector("thead > tr").innerHTML = "";
             playlistBox.querySelector("tbody > tr").innerHTML = "";
 
-            //think if necessary
         }
 
     }
@@ -221,7 +237,7 @@
                 reorderCell.appendChild(linkReorder);
                 var linkText = document.createTextNode("Reorder");
                 linkReorder.appendChild(linkText);
-                linkReorder.href = "ReorderPage.html?id=" + playlist.id;
+                linkReorder.href = "ReorderPage.html?idPlaylist=" + playlist.id;
                 row.appendChild(reorderCell);
 
                 tableBody.appendChild(row);
@@ -248,7 +264,26 @@
 
     function CreateAlbum(){
         var createAlbumBox = document.getElementById("createAlbumBox");
+        var customMsg = document.querySelector(".customMsg");
+        createAlbumBox.querySelector("input[type = 'button'").addEventListener("click", (e) => {
+            var form = e.target.closest("form");
+            makeCall("POST", "CreateAlbum", form, function(req){
+                if (req.readyState == 4){
+                    if(req.status == 200){
+                        var album = JSON.parse(req.responseText);
+                        createSong.updateAlbumList(album);
+                        customMsg.style.display = 'block';
+                        customMsg.textContent = "Album inserted correctly";
+                    }else{
+                        handleCustomRedirect(req.status);
+                    }
+                }
+            })
+            
+        })
+
         this.show = function(){
+            customMsg.style.display = 'none';
             createAlbumBox.style.display = 'block';
         }
 
@@ -261,16 +296,52 @@
 
     function CreateSong(){
         var createSongBox = document.getElementById("createSongBox");
-        
+        var customMsg = document.querySelector(".customMsg");
+        var self = this;
+        createSongBox.querySelector("input[type = 'button'").addEventListener("click", (e) => {
+            var form = e.target.closest("form");
+            makeCall("POST", "CreateSong", form, function(req){
+                if (req.readyState == 4){
+                    if(req.status == 200){
+                        customMsg.textContent = "Song inserted correctly";
+                        customMsg.style.display = 'block';
+                    }else{
+                        handleCustomRedirect(req.status);
+                    }
+                }
+            })
+            
+        })
+
+        this.updateAlbumList = function(album){
+            var select = document.querySelector("select");
+            var newOption = document.createElement("option");
+            newOption.text = album.title;
+            newOption.value = album.id;
+            select.appendChild(newOption);
+        }
+
         this.show = function(){
+            makeCall("GET", "GetUserAlbums", null, function(req){
+                if (req.readyState == 4){
+                    if(req.status == 200){
+                        createSongBox.querySelector("select").innerHTML = "";
+                        var albums = JSON.parse(req.responseText);
+                        albums.forEach(x =>{
+                            self.updateAlbumList(x)
+                        });
+                    }else{
+                        handleCustomRedirect(req.status);
+                    }
+                }
+            })
+            customMsg.style.display = "none";
             createSongBox.style.display = 'block';
         }
 
         this.hide = function(){
             createSongBox.style.display = 'none';
         }
-
-        
 
     }
 

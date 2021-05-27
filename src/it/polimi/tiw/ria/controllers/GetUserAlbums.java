@@ -3,7 +3,7 @@ package it.polimi.tiw.ria.controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -11,25 +11,26 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import it.polimi.tiw.ria.beans.Album;
-import it.polimi.tiw.ria.beans.Song;
 import it.polimi.tiw.ria.beans.User;
-import it.polimi.tiw.ria.dao.PlaylistDAO;
+import it.polimi.tiw.ria.dao.AlbumDAO;
 import it.polimi.tiw.ria.utils.ConnectionHandler;
 
 
-@WebServlet("/GetSongsOfPlaylist")
-public class GetSongsOfPlaylist extends HttpServlet {
+@WebServlet("/GetUserAlbums")
+public class GetUserAlbums extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	
-    public GetSongsOfPlaylist() {
+       
+  
+    public GetUserAlbums() {
         super();
     }
-
+    
     public void init() throws ServletException {
     	ServletContext servletContext = getServletContext();
     	connection = ConnectionHandler.getConnection(servletContext);
@@ -37,36 +38,22 @@ public class GetSongsOfPlaylist extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int idUser = ((User) request.getSession().getAttribute("user")).getId();
+		HttpSession session = request.getSession();
+		User user = (User) session.getAttribute("user");
 		
-		int idPlaylist;
+		AlbumDAO albumDAO = new AlbumDAO(connection);
+		ArrayList<Album> albums;
 		try {
-			idPlaylist = Integer.parseInt(request.getParameter("idPlaylist"));
-		}catch(Exception e) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println(e.getMessage());
-			return;
-		}
-		
-		
-		
-		
-		PlaylistDAO playlistDAO = new PlaylistDAO(connection);
-		HashMap<Song, Album> songs = new HashMap<>();
-		try {
-			songs = playlistDAO.findPlaylistSongs(idPlaylist);
-		} catch (SQLException e) {
+			albums = albumDAO.getAllUserAlbums(user.getId());
+		}catch(SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println(e.getMessage());
 			return;
 		}
-		Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
 		response.setStatus(HttpServletResponse.SC_OK);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		response.getWriter().println(gson.toJson(songs));
-		
-		
+		response.getWriter().println(new Gson().toJson(albums));
 		
 	}
 

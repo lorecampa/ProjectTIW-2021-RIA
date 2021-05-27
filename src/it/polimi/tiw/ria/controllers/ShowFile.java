@@ -39,7 +39,7 @@ public class ShowFile extends HttpServlet {
 			return;
 		}
 		
-		int index = pathInfo.lastIndexOf("_");
+		int index = pathInfo.indexOf("_");
 		String fileType = pathInfo.substring(1, index);
 		String fileId = pathInfo.substring(index + 1);
 		
