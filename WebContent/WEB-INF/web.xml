@@ -44,7 +44,15 @@
   <filter-mapping>
   	<filter-name>NotLoggedChecker</filter-name>
   	<url-pattern>/GetSongsOfPlaylist</url-pattern>
-  	<url-pattern>/GetUserPlaylist</url-pattern>  	
+  	<url-pattern>/GetUserPlaylist</url-pattern>
+  	<url-pattern>/AddSongToPlaylist</url-pattern>  
+  	<url-pattern>/CreateAlbum</url-pattern>  
+  	<url-pattern>/CreateSong</url-pattern>  
+  	<url-pattern>/GetSongsOfPlaylist</url-pattern>  
+  	<url-pattern>/GetUserAlbums</url-pattern>  
+  	<url-pattern>/GetUserPlaylist</url-pattern>
+  	<url-pattern>/GetUserSongsNotInPlaylist</url-pattern>  
+  	<url-pattern>/ShowFile</url-pattern>      	
   </filter-mapping>
 
   <welcome-file-list>

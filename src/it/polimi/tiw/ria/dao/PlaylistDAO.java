@@ -104,4 +104,31 @@ public class PlaylistDAO {
 		
 	}
 	
+	
+	public int createPlaylist(String title, int idCreator) throws SQLException {
+		int code = 0;
+		String query = "INSERT IGNORE INTO MusicPlaylistdb.Playlist (title, idCreator)   VALUES(?, ?)";
+		PreparedStatement pstatement = null;
+		try {
+			pstatement = con.prepareStatement(query);
+			pstatement.setString(1, title);
+			pstatement.setInt(2, idCreator);
+			code = pstatement.executeUpdate();
+
+		} catch (SQLException e) {
+			throw new SQLException(e);
+		} finally {
+			try {
+				pstatement.close();
+			} catch (Exception e1) {
+
+			}
+		}
+		
+		return code;
+	}
+	
+	
+		
+	
 }

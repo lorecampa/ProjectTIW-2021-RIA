@@ -4,8 +4,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
+import it.polimi.tiw.ria.beans.Album;
 import it.polimi.tiw.ria.beans.Playlist;
+import it.polimi.tiw.ria.beans.Song;
 
 public class MatchDAO {
 private Connection con = null;
@@ -16,8 +19,8 @@ private Connection con = null;
 	
 	
 	
-	public int insertSongInPlaylist(int idSong, int idPlaylist) throws SQLException {
-		int result = 0;
+	public HashMap<Song, Album> insertSongInPlaylist(int idSong, int idPlaylist) throws SQLException {
+		HashMap<Song, Album> songAndAlbum = new HashMap<>();
         // for find the order position to assign
         PreparedStatement pstmt1 = null;
         
@@ -26,6 +29,10 @@ private Connection con = null;
         
         //for insertion
         PreparedStatement pstmt3 = null;
+        
+        //for gettin song
+        PreparedStatement pstmt4 = null;
+        ResultSet rs = null;
         
         // for getting order
         ResultSet rsFindOrder = null;
@@ -59,7 +66,6 @@ private Connection con = null;
             
             pstmt2 = con.prepareStatement(query2);
             pstmt2.setInt(1, orderToInsert);
-            
             pstmt2.executeUpdate();
             
             
@@ -69,15 +75,42 @@ private Connection con = null;
             pstmt3.setInt(1, idSong);
             pstmt3.setInt(2, idPlaylist);
             pstmt3.setInt(3, orderToInsert);
-            
             int rowAdded = pstmt3.executeUpdate();
+
             
             if(rowAdded == 1) {
-            	con.commit();
-            	result = 1;
+            	String query4 = "SELECT s.id, s.title, s.songUrl, a.id, a.title, a.interpreter, a.year, a.genre, a.imageUrl FROM MusicPlaylistDb.Song as s, MusicPlaylistDb.Album as a\n"
+            			+ "WHERE s.id = ? and s.idAlbum = a.id";
+            	pstmt4 = con.prepareStatement(query4);
+            	pstmt4.setInt(1, idSong);
+            	rs = pstmt4.executeQuery();
 
+            	if (rs.next()) {
+
+            		Song song = new Song();
+            		song.setId(rs.getInt(1));
+            		song.setTitle(rs.getString(2));
+            		song.setSongUrl(rs.getString(3));
+            		song.setIdAlbum(rs.getInt(4));
+            		
+            		Album album = new Album();
+            		album.setId(rs.getInt(4));
+            		album.setTitle(rs.getString(5));
+            		album.setInterpreter(rs.getString(6));
+            		album.setYear(rs.getShort(7));
+            		album.setGenre(rs.getString(8));
+            		album.setImageUrl(rs.getString(9));
+            		songAndAlbum.put(song, album);
+
+            		
+            	}else {
+            		con.rollback();
+            		return null;
+            	}
+            	con.commit();
             }else {
             	con.rollback();
+            	return null;
 
             }
           
@@ -100,7 +133,7 @@ private Connection con = null;
             } catch (SQLException e) {
             }
         }
-        return result;
+        return songAndAlbum;
 	}
 
 }

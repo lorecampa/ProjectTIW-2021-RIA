@@ -1,7 +1,7 @@
 (function(){
 
     //objects
-    var userInfo, userPlaylists, createPlaylist, createAlbum, createSong, currPlaylist;
+    var userInfo, errorMessage, userPlaylists, createAlbum, createSong, currPlaylist;
     var homePageBtnContainer, logoutBtnContainer;
     //main controller
     var pageOrchestrator = new PageOrchestrator(); 
@@ -10,6 +10,21 @@
     window.addEventListener("load", () =>{
         pageOrchestrator.start();
     })
+
+    function ErrorMessage(){
+        var container = document.getElementById("errorMessageBox");
+        var message = container.querySelector("h1");
+        
+        this.show = function(){
+            container.style.display = 'block';
+        }
+        this.hide = function(){
+            container.style.display = 'none';
+        }
+        this.set = function(msg){
+            message.textContent = msg;
+        }
+    }
     
     function UserInfo(){
         var container = document.getElementById("personalMessage");
@@ -28,31 +43,26 @@
     function Playlist(playlist){
         var playlistBox = document.getElementById("playlistBox");
         var addSongToPlaylistBox = document.getElementById("addSongToPlaylist");
+        var customMsg = addSongToPlaylistBox.querySelector("p");
         var prevBtn = document.getElementById("prevBtn");
         var nextBtn  = document.getElementById("nextBtn");
-        playlistBox.querySelector("h3").innerHTML = "";
-
-        var currSongsMap;
         var prevIdx = 0;
         var nextIdx = 5;
         var self = this;
 
         this.show = function(){
-            this.registerEvents();
+            this.reset();
             playlistBox.style.display = 'block';
             prevBtn.style.display = 'bloxk';
             nextBtn.style.display = 'bloxk';
-            //one time reset
-            playlistBox.querySelector("h3").textContent = playlist.title;
-            addSongToPlaylistBox.querySelector("select").innerHTML = "";
+            playlistBox.querySelector("p").textContent = playlist.title;
 
             makeCall("GET", "GetSongsOfPlaylist?idPlaylist="+playlist.id, null, function(req){
                 if (req.readyState == 4){
                     if(req.status == 200){
-                        currSongsMap = JSON.parse(req.responseText);
-                        self.update();
+                        self.update(JSON.parse(req.responseText));
                     }else{
-                        handleCustomRedirect(req.status);
+                        pageOrchestrator.showErrorPage(req.status, req.responseText);
                     }
                 }
             })
@@ -60,9 +70,22 @@
             makeCall("GET", "GetUserSongsNotInPlaylist?idPlaylist="+playlist.id, null, function(req){
                 if (req.readyState == 4){
                     if(req.status == 200){
-                        self.updateSongsToInsert(JSON.parse(req.responseText));
+                        var songs = JSON.parse(req.responseText);
+                        if (songs.length > 0){
+                            addSongToPlaylistBox.style.display = "block";
+                        }else{
+                            addSongToPlaylistBox.style.display = "none";
+                            return;
+                        }
+                        var select = addSongToPlaylistBox.querySelector("select");
+                        songs.forEach(x => {
+                            var option = document.createElement("option");
+                            option.text = x.title;
+                            option.value = x.id;
+                            select.appendChild(option);
+                        });
                     }else{
-                        handleCustomRedirect(req.status);
+                        pageOrchestrator.showErrorPage(req.status, req.responseText);
                     }
                 }
             })
@@ -70,21 +93,21 @@
 
         }
 
-        this.update = function(){
-            this.reset();
+        this.update = function(songsMap){
             var rowHead = playlistBox.querySelector("thead > tr");
             var rowBody = playlistBox.querySelector("tbody > tr");
-            var size = currSongsMap.length;
+            var size = songsMap.length;
             if (size == 0){
-                //TODO insert message
+                playlistBox.querySelector("table").style.display = 'none';
+                playlistBox.querySelector("p").textContent = "No songs in playlist";
                 return;
             }else{
                 this.controlButtonVisibility(size);
             }
 
             for (let i = prevIdx; i < nextIdx && i < size; i++){
-                var song = currSongsMap[i][0];
-                var album = currSongsMap[i][1];
+                var song = songsMap[i][0];
+                var album = songsMap[i][1];
 
                 var title = document.createElement("td");
                 var linkTitle = document.createElement("a");
@@ -108,25 +131,19 @@
             }
         }
 
-        this.updateSongsToInsert = function(songs){
-            if (songs.length > 0){
-                addSongToPlaylistBox.style.display = "block";
-            }else{
-                addSongToPlaylistBox.style.display = "none";
-                return;
+        this.updateSongsToInsert = function(){
+            var option = addSongToPlaylistBox.querySelector("option:checked")
+            option.parentNode.removeChild(option);
+            if (addSongToPlaylistBox.querySelector("select").length == 0){
+                addSongToPlaylistBox.style.display = 'none';
             }
-            var select = addSongToPlaylistBox.querySelector("select");
-            songs.forEach(x => {
-                var option = document.createElement("option");
-                option.text = x.title;
-                option.value = x.id;
-                select.appendChild(option);
-            })
 
         }
 
         this.controlButtonVisibility = function(num){
-            if (nextIdx >= num){
+            var tbody = playlistBox.querySelector("tbody");
+            var size = num + tbody.querySelectorAll("td").length;
+            if (nextIdx >= size){
                 nextBtn.style.display = 'none';
             }else{
                 nextBtn.style.display = 'block';
@@ -160,15 +177,15 @@
                 this.nextSlide();
             })
             addSongToPlaylistBox.querySelector("input[type='button']").addEventListener("click", (e)=>{
-                makeCall("GET", "AddSongToPlaylist?idPlaylist=" + playlist.id, new FormData(e.target.closest("form")), function(req){
+                makeCall("POST", "AddSongToPlaylist?idPlaylist=" + playlist.id, e.target.closest("form"), function(req){
                     if (req.readyState == 4){
                         if(req.status == 200){
-                            //message of good result
-                            self.update();
-                            
+                            self.update(JSON.parse(req.responseText));
+                            self.updateSongsToInsert();                            
+                        }else if (req.status == 400){
+                            pageOrchestrator.showLocalMessage(customMsg, req.responseText);
                         }else{
-                            //TODO change 
-                            handleCustomRedirect(req.status);
+                            pageOrchestrator.showErrorPage(req.status, req.responseText);
                         }
                     }
                 });
@@ -180,6 +197,8 @@
         }
 
         this.reset = function(){
+            addSongToPlaylistBox.querySelector("select").innerHTML = "";
+            playlistBox.querySelector("p").innerHTML = "";
             playlistBox.querySelector("thead > tr").innerHTML = "";
             playlistBox.querySelector("tbody > tr").innerHTML = "";
 
@@ -193,16 +212,21 @@
     function UserPlaylists(){
         var userPlaylistsBox = document.getElementById("userPlaylistsBox");
         var tableBody = userPlaylistsBox.querySelector("tbody");
+        var createPlaylistBox = document.getElementById("createPlaylistBox");
+        var customMsg = createPlaylistBox.querySelector("p");
         var self = this;
 
+
         this.show = function(){
+            this.reset();
             userPlaylistsBox.style.display = 'block';
+            createPlaylistBox.style.display = 'block';
             makeCall("GET", "GetUserPlaylist", null, function(req){
                 if (req.readyState == 4){
                     if(req.status == 200){
                         self.update(JSON.parse(req.responseText));
                     }else{
-                        handleCustomRedirect(req.status);
+                        pageOrchestrator.showErrorPage(req.status, req.responseText);
                     }
                 }
             });
@@ -210,10 +234,11 @@
 
         this.hide = function(){
             userPlaylistsBox.style.display = 'none';
+            createPlaylistBox.style.display = 'none';
+
         }
 
         this.update = function(playlists){
-            this.reset();
             playlists.forEach(function(playlist){
                 var row = document.createElement("tr");
                 var nameCell = document.createElement("td");
@@ -223,6 +248,7 @@
                 linkName.href = "#";
                 linkName.addEventListener("click", () =>{
                     currPlaylist = new Playlist(playlist);
+                    currPlaylist.registerEvents();
                     pageOrchestrator.showPlaylistPage();
                 })
                 
@@ -243,21 +269,27 @@
                 tableBody.appendChild(row);
             });
         }
+        this.registerEvents = function(){
+            createPlaylistBox.querySelector("input[type = 'button'").addEventListener("click", (e)=>{
+                makeCall("POST", "CreatePlaylist", e.target.closest("form"), function(req){
+                    if (req.readyState == 4){
+                        if(req.status == 200){
+                            var array = new Array();
+                            array.push(JSON.parse(req.responseText));
+                            self.update(array);
+                            pageOrchestrator.showLocalMessage(customMsg, "Playlist" + array[0].title + "inserted correctly");
+                        }else if (req.status == 400){
+                            pageOrchestrator.showLocalMessage(customMsg, req.responseText);
+                        }else{
+                            pageOrchestrator.showErrorPage(req.status, req.responseText);
+                        }
+                    }
+                })
+            });
+        }
 
         this.reset = function(){
             tableBody.innerHTML = "";
-        }
-
-    }
-
-    function CreatePlaylist(){
-        var createPlaylistBox = document.getElementById("createPlaylistBox");
-      
-        this.show = function(){
-            createPlaylistBox.style.display = 'block';
-        }
-        this.hide = function(){
-            createPlaylistBox.style.display = 'none';
         }
 
     }
@@ -266,16 +298,16 @@
         var createAlbumBox = document.getElementById("createAlbumBox");
         var customMsg = document.querySelector(".customMsg");
         createAlbumBox.querySelector("input[type = 'button'").addEventListener("click", (e) => {
-            var form = e.target.closest("form");
-            makeCall("POST", "CreateAlbum", form, function(req){
+            makeCall("POST", "CreateAlbum", e.target.closest("form"), function(req){
                 if (req.readyState == 4){
                     if(req.status == 200){
                         var album = JSON.parse(req.responseText);
                         createSong.updateAlbumList(album);
-                        customMsg.style.display = 'block';
-                        customMsg.textContent = "Album inserted correctly";
+                        pageOrchestrator.showLocalMessage(customMsg, "Album inserted correctly");
+                    }else if (req.status == 400){
+                        pageOrchestrator.showLocalMessage(customMsg, req.responseText);
                     }else{
-                        handleCustomRedirect(req.status);
+                        pageOrchestrator.showErrorPage(req.status, req.responseText);
                     }
                 }
             })
@@ -296,17 +328,18 @@
 
     function CreateSong(){
         var createSongBox = document.getElementById("createSongBox");
-        var customMsg = document.querySelector(".customMsg");
+        var customMsg = createSongBox.querySelector(".customMsg");
         var self = this;
         createSongBox.querySelector("input[type = 'button'").addEventListener("click", (e) => {
             var form = e.target.closest("form");
             makeCall("POST", "CreateSong", form, function(req){
                 if (req.readyState == 4){
                     if(req.status == 200){
-                        customMsg.textContent = "Song inserted correctly";
-                        customMsg.style.display = 'block';
+                        pageOrchestrator.showLocalMessage(customMsg, "Song inserted correctly");
+                    }else if (req.status == 400){
+                        pageOrchestrator.showLocalMessage(customMsg, req.responseText);
                     }else{
-                        handleCustomRedirect(req.status);
+                        pageOrchestrator.showErrorPage(req.status, req.responseText);
                     }
                 }
             })
@@ -330,8 +363,10 @@
                         albums.forEach(x =>{
                             self.updateAlbumList(x)
                         });
+                    }else if (req.status == 400){
+                        pageOrchestrator.showLocalMessage(customMsg, req.responseText);
                     }else{
-                        handleCustomRedirect(req.status);
+                        pageOrchestrator.showErrorPage(req.status, req.responseText);
                     }
                 }
             })
@@ -353,11 +388,18 @@
 
     function PageOrchestrator(){
         this.start = function(){
+            
             userInfo = new UserInfo();
+
+            errorMessage = new ErrorMessage();
+
             userPlaylists = new UserPlaylists();
+            userPlaylists.registerEvents();
+
             createAlbum = new CreateAlbum();
-            createPlaylist = new CreatePlaylist();
+
             createSong = new CreateSong();
+
             currPlaylist = new Playlist();
 
             //Button
@@ -369,7 +411,7 @@
             logoutBtnContainer = document.getElementById("logoutBtnContainer");
             logoutBtnContainer.querySelector("input[type='button']").addEventListener("click", () =>{
                 sessionStorage.removeItem("user");
-                handleCustomRedirect(204);
+                window.location.href = "LoginPage.html";
             })
 
             this.showHomePage();
@@ -380,7 +422,6 @@
             userInfo.show();
             userPlaylists.show();
             createAlbum.show();
-            createPlaylist.show();
             createSong.show();
         }
 
@@ -390,13 +431,25 @@
             currPlaylist.show();
         }
 
+        this.showErrorPage = function(status, msg){
+            this.reset();
+            homePageBtnContainer.style.display = 'block';
+            errorMessage.set(msg);
+            errorMessage.show();
+        }
+
+        this.showLocalMessage = function(container, msg){
+            container.textContent = msg;
+            container.style.display = 'block';
+        }
+
         this.reset = function(){
             homePageBtnContainer.style.display = 'none';
             currPlaylist.hide();
             userInfo.hide();
+            errorMessage.hide();
             userPlaylists.hide();
             createAlbum.hide();
-            createPlaylist.hide();
             createSong.hide();
         }
 

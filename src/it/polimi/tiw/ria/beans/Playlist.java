@@ -13,6 +13,12 @@ public class Playlist {
 		super();
 	}
 	
+	public Playlist(String title, int idCreator) {
+		this.title = title;
+		this.idCreator = idCreator;
+		setCurrentDate();
+	}
+	
 	
 	
 
@@ -32,6 +38,10 @@ public class Playlist {
 
 	public void setDate(String date) {
 		this.date = date;
+	}
+	
+	private void setCurrentDate() {
+		this.date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 	}
 
 

@@ -3,6 +3,7 @@ package it.polimi.tiw.ria.controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -13,6 +14,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import it.polimi.tiw.ria.beans.Album;
+import it.polimi.tiw.ria.beans.Song;
 import it.polimi.tiw.ria.dao.MatchDAO;
 import it.polimi.tiw.ria.utils.ConnectionHandler;
 
@@ -33,19 +39,19 @@ public class AddSongToPlaylist extends HttpServlet {
 
 	}
 	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doPost(request, response);
-	}
 
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int idPlaylist;
 		int idSong;
-		//FIXME idSong not passed correctly
+
+
 		try {
 			idPlaylist = Integer.parseInt(request.getParameter("idPlaylist"));
-			//idSong = Integer.parseInt(request.getParameter("songs"));
-			idSong = 11;
+			idSong = Integer.parseInt(request.getParameter("songSelected"));
+			
+			System.out.println("idP: "+ idPlaylist);
+			System.out.println("idS: "+ idSong);
 
 		}catch(Exception e) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -53,21 +59,30 @@ public class AddSongToPlaylist extends HttpServlet {
 			return;
 		}
 		
+		System.out.println("A");
 
 		MatchDAO matchDAO = new MatchDAO(connection);
-		int result;
+		HashMap<Song, Album> songAndAlbum = new HashMap<>();
 		try {
-			result = matchDAO.insertSongInPlaylist(idSong, idPlaylist);
+			songAndAlbum = matchDAO.insertSongInPlaylist(idSong, idPlaylist);
 		}catch(SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println(e.getMessage());
 			return;
 		}
-
-		if (result == 1) {
-			response.setStatus(HttpServletResponse.SC_OK);
-		}else {
+		System.out.println("B");
+		
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		if (songAndAlbum == null) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println("Internal error");
+			
+		}else {
+			response.setStatus(HttpServletResponse.SC_OK);
+			Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
+			response.getWriter().println(gson.toJson(songAndAlbum));
+			System.out.println(gson.toJson(songAndAlbum));
 		}
 		
 	}

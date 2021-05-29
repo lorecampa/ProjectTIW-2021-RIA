@@ -23,23 +23,23 @@
 		</li>
     </ul> 
 
-	<table id ="userPlaylistsBox">
-		<thead>
-			<tr>
-				<th>Playlists</th>
-				<th>Date</th>
-				<th>Reorder</th>
-			</tr>
-		</thead>
-		<tbody id ="userPlaylistsBody"></tbody>
-	</table>
-	
+	<div id = "userPlaylistBox">
+		<table id ="userPlaylistsBox">
+			<thead>
+				<tr>
+					<th>Playlists</th>
+					<th>Date</th>
+					<th>Reorder</th>
+				</tr>
+			</thead>
+			<tbody id ="userPlaylistsBody"></tbody>
+		</table>
+	</div>
 	
 	<div id ="createPlaylistBox">
 		<h3>Create Playlist</h3>
-		<form method= "POST" action = "#">
+		<form action = "#">
 			<p class = "customMsg"></p>
-
 			<label>Title </label><input name = "name" type="text" required>
 			<input value = "create" type = "button">
 		</form>
@@ -107,7 +107,7 @@
 
 
 	<div id="playlistBox">
-		<h3></h3>
+		<p></p>
 		<table>
 			<thead>
 				<tr></tr>
@@ -124,18 +124,21 @@
 		<form action = "#">
 			<input id="nextBtn" value = "Next" type = "button">	
 		</form>
-
-		<div id = "addSongToPlaylist" enctype="multipart/form-data">
+		
+		<div id = "addSongToPlaylist" >
 			<h2>Add Song to Playlist</h2>
-			<form method= "POST" action = "#">
+			<form action = "#">
 				<p class = "customMsg"></p>
-
 				<p>Songs created</p>
-				<select class = "custom-select" name= "songs" required></select>
+				<select name= "songSelected" required></select>
 				<input value = "add to playlist" type = "button">
 			</form>
 		</div>
 
+	</div>
+
+	<div id = "errorMessageBox">
+		<h1></h1>
 	</div>
 	
 </body>

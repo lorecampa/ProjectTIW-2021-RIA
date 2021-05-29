@@ -10,8 +10,9 @@ public class Album {
 	private String genre;
 	private int idCreator;
 	private String imageUrl;
+	
 	public Album() {
-		
+		super();
 	}
 	public Album(String title, String interpreter, short year, String genre, int idCreator, String imageUrl) {
 		this.title = title;

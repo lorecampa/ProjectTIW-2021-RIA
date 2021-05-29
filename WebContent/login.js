@@ -8,11 +8,8 @@
     var registrationButton = document.getElementById("registerButton");
 
     window.addEventListener("load", ()=>{
-      var queryStringMsg = getRedirectMessage();
       if (sessionStorage.getItem("user") != null){
         window.location.href = "HomePage.html";
-      }else if (queryStringMsg != null){
-        errorMessage.textContent = queryStringMsg;
       }
     })
 

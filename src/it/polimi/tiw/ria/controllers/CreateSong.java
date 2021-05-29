@@ -56,16 +56,16 @@ public class CreateSong extends HttpServlet {
 		
 		String title = request.getParameter("title");
 		String albumIdString = request.getParameter("albums");
-		
 
-		
+
+			
 		if (title == null || title.isEmpty() || 
 				albumIdString == null || albumIdString.isEmpty()) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Invalid params");
 			return;
 		}
-		
+
 		int albumId;
 		try {
 			albumId = Integer.parseInt(albumIdString);
@@ -74,7 +74,6 @@ public class CreateSong extends HttpServlet {
 			response.getWriter().println("Error parsing albumId");
 			return;
 		}
-		
 		
 		//find album bean by id
 		AlbumDAO albumDAO = new AlbumDAO(connection);

@@ -97,22 +97,26 @@ private Connection con;
 		
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
 			pstatement.setInt(1, albumId);
-			
 			try (ResultSet result = pstatement.executeQuery();) {
+
 				if (!result.isBeforeFirst())
 					return null;
 				else {
+					result.next();
 					album = new Album();
 					album.setId(albumId);
-					album.setTitle(result.getString("title"));
-					album.setInterpreter(result.getString("interpreter"));
-					album.setYear(result.getShort("year"));
-					album.setGenre(result.getString("genre"));
-					album.setIdCreator(result.getInt("idCreator"));
-					album.setImageUrl(result.getString("imageUrl"));
+					album.setTitle(result.getString(2));
+					album.setInterpreter(result.getString(3));
+					album.setYear(result.getShort(4));
+					album.setGenre(result.getString(5));
+					album.setIdCreator(result.getInt(6));
+					album.setImageUrl(result.getString(7));
+
+
 				}
 			}
 		}
+
 		return album;
 
 	}
