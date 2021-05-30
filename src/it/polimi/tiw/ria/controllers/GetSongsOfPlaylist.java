@@ -58,6 +58,7 @@ public class GetSongsOfPlaylist extends HttpServlet {
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println(e.getMessage());
+			e.printStackTrace();
 			return;
 		}
 		Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();
@@ -65,6 +66,7 @@ public class GetSongsOfPlaylist extends HttpServlet {
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().println(gson.toJson(songs));
+
 		
 		
 		

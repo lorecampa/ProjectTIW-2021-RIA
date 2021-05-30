@@ -46,7 +46,7 @@ public class PlaylistDAO {
 	public HashMap<Song, Album> findPlaylistSongs(int idPlaylist) throws SQLException{
 		HashMap<Song, Album> songs = new HashMap<>();
 		
-		String query = "SELECT s.title, s.songUrl, a.title, a.interpreter, a.year, a.genre, a.idCreator, a.imageUrl, a.id, s.id FROM MusicPlaylistdb.Playlist as p, MusicPlaylistdb.MatchOrder as m, MusicPlaylistdb.Song as s, MusicPlaylistdb.Album as a\n"
+		String query = "SELECT s.id, s.title, s.songUrl , m.idSongBefore, m.dateAdding, s.idAlbum, a.title, a.interpreter, a.year, a.genre, a.idCreator, a.imageUrl FROM MusicPlaylistdb.Playlist as p, MusicPlaylistdb.MatchOrder as m, MusicPlaylistdb.Song as s, MusicPlaylistdb.Album as a\n"
 				+ "WHERE p.id = ? and p.id = m.idPlaylist and s.id = m.idSong and s.idAlbum = a.id and p.idCreator = a.idCreator";
 		
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
@@ -54,20 +54,25 @@ public class PlaylistDAO {
 			try (ResultSet result = pstatement.executeQuery();) {
 				while(result.next()) {
 					Song song = new Song();
+					song.setId(result.getInt(1));
+					song.setTitle(result.getString(2));
+					song.setSongUrl(result.getString(3));
+					song.setIdSongBefore(result.getInt(4));
+					song.setDateAdding(result.getTimestamp(5));
+					int idAlbum = result.getInt(6);
+					song.setIdAlbum(idAlbum);
+
+					
 					Album album = new Album();
-					
-					
-					song.setTitle(result.getString(1));
-					song.setSongUrl(result.getString(2));
-					album.setTitle(result.getString(3));
-					album.setInterpreter(result.getString(4));
-					album.setYear(result.getShort(5));
-					album.setGenre(result.getString(6));
-					album.setIdCreator(result.getInt(7));
-					album.setImageUrl(result.getString(8));
-					album.setId(result.getInt(9));
-					song.setIdAlbum(result.getInt(9));
-					song.setId(result.getInt(10));
+					album.setId(idAlbum);
+					album.setTitle(result.getString(7));
+					album.setInterpreter(result.getString(8));
+					album.setYear(result.getShort(9));
+					album.setGenre(result.getString(10));
+					album.setIdCreator(result.getInt(11));
+					album.setImageUrl(result.getString(12));
+
+				
 					songs.put(song, album);
 				}
 			}
@@ -80,22 +85,23 @@ public class PlaylistDAO {
 	public ArrayList<Song> findAllUserSongsNotInPlaylist(int idUser, int idPlaylist) throws SQLException{
 		ArrayList<Song> songs = new ArrayList<>();
 		
-		String query = "SELECT s.id, s.title FROM MusicPlaylistdb.Playlist as p, MusicPlaylistdb.Song as s, MusicPlaylistdb.Album as a\n"
-				+ "WHERE p.id = ? and p.idCreator = ? and s.idAlbum = a.id and a.idCreator = ?\n"
-				+ "and not exists(\n"
-				+ "SELECT *\n"
+		String query = "SELECT s.id, s.title FROM MusicPlaylistdb.Song as s, MusicPlaylistdb.Album as a\n"
+				+ "WHERE s.idAlbum = a.id and a.idCreator = ?\n"
+				+ "and s.id NOT IN (\n"
+				+ "SELECT m.idSong\n"
 				+ "FROM MusicPlaylistdb.MatchOrder as m\n"
-				+ "WHERE m.idSong = s.id and m.idPlaylist = p.id)";
+				+ "WHERE m.idPlaylist = ?)";
 		
 		try (PreparedStatement pstatement = con.prepareStatement(query);) {
-			pstatement.setInt(1, idPlaylist);
-			pstatement.setInt(2, idUser);
-			pstatement.setInt(3, idUser);
+			pstatement.setInt(1, idUser);
+			pstatement.setInt(2, idPlaylist);
 			try (ResultSet result = pstatement.executeQuery();) {
+
 				while(result.next()) {
 					Song song = new Song();
 					song.setId(result.getInt(1));
 					song.setTitle(result.getString(2));
+
 					songs.add(song);
 				}
 			}

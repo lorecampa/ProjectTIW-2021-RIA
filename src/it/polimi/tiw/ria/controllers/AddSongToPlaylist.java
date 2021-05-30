@@ -45,13 +45,11 @@ public class AddSongToPlaylist extends HttpServlet {
 		int idPlaylist;
 		int idSong;
 
-
 		try {
 			idPlaylist = Integer.parseInt(request.getParameter("idPlaylist"));
 			idSong = Integer.parseInt(request.getParameter("songSelected"));
 			
-			System.out.println("idP: "+ idPlaylist);
-			System.out.println("idS: "+ idSong);
+
 
 		}catch(Exception e) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -59,7 +57,6 @@ public class AddSongToPlaylist extends HttpServlet {
 			return;
 		}
 		
-		System.out.println("A");
 
 		MatchDAO matchDAO = new MatchDAO(connection);
 		HashMap<Song, Album> songAndAlbum = new HashMap<>();
@@ -70,11 +67,10 @@ public class AddSongToPlaylist extends HttpServlet {
 			response.getWriter().println(e.getMessage());
 			return;
 		}
-		System.out.println("B");
 		
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		if (songAndAlbum == null) {
+		if (songAndAlbum == null || songAndAlbum.isEmpty()) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println("Internal error");
 			

@@ -1,11 +1,17 @@
 package it.polimi.tiw.ria.beans;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Song{
 	
 	private int id;
 	private String title;
 	private String songUrl;
 	private int idAlbum;
+	private int idSongBefore;
+	private String dateAdding;
 	
 	
 	
@@ -66,6 +72,25 @@ public class Song{
 	public void setIdAlbum(int idAlbum) {
 		this.idAlbum = idAlbum;
 	}
+
+	public int getIdSongBefore() {
+		return idSongBefore;
+	}
+
+	public void setIdSongBefore(int idSongBefore) {
+		this.idSongBefore = idSongBefore;
+	}
+
+	public String getDateAdding() {
+		return dateAdding;
+	}
+
+	public void setDateAdding(Timestamp dateAdding) {
+		this.dateAdding = new SimpleDateFormat("dd-MM-yyyy").format(dateAdding);
+	}
+	
+	
+	
 	
 	
 	

@@ -2,14 +2,21 @@
 <head>
 <title>Login</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" media="all" href="reorder.css">
 <script src="utils.js" charset="utf-8" defer></script>
 <script src = "reorder.js" charset="utf-8" defer></script>
+
+
 </head>
 <body>
 
-	<div>
-		<h3></h3>
+	<div id = "sortingBox">
+		<p></p>
 		<table>
+			<thead>
+				<th>Name</th>
+				<th>Date</th>
+			</thead>
 			<tbody>
 			</tbody>
 		</table>
@@ -17,6 +24,11 @@
         <form action = "#">
 			<input id="saveSorting" value = "Save" type = "button">	
 		</form>
+	</div>
+
+
+	<div id ="errorBox">
+		<p></p>
 	</div>
 	
 </body>

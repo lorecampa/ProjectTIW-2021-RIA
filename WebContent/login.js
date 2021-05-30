@@ -1,63 +1,64 @@
 (function(){
 
     var errorMessage = document.getElementById("errorMessage");
-    var loginDiv = document.getElementById("loginDiv");
-    var loginButton = document.getElementById("loginButton");
-    var registrationDiv = document.getElementById("registrationDiv");
-    registrationDiv.hidden = true;
-    var registrationButton = document.getElementById("registerButton");
+    
+    var loginBox = document.getElementById("loginBox");
+    var loginButton = loginBox.querySelector("input[type='button']");
+
+    var registrationBox = document.getElementById("registrationBox");
+    var registrationButton = registrationBox.querySelector("input[type='button']");
 
     window.addEventListener("load", ()=>{
       if (sessionStorage.getItem("user") != null){
         window.location.href = "HomePage.html";
+      }else{
+        this.showLoginPage();
+        this.registerEvent();
       }
     })
 
     function cBack(req){
         if (req.readyState == XMLHttpRequest.DONE){
             const msg = req.responseText;
-            switch (req.status) {
-              case 200:
-            	  sessionStorage.setItem('user', msg);
-                window.location.href = "HomePage.html";
-                break;
-              case 400:
-              case 401:
-              case 500:      
-                errorMessage.textContent = msg;
-                break;
+            if (req.status == 200){
+              sessionStorage.setItem('user', msg);
+              window.location.href = "HomePage.html";
+            }else{
+              errorMessage.textContent = msg
             }
         }
     }
 
+    this.registerEvent = function(){
+      loginBox.querySelector("a").addEventListener('click', () =>{
+        this.showRegistrationPage();
+      });
+  
+      registrationBox.querySelector("a").addEventListener('click', () =>{
+        this.showLoginPage();
+      });
+  
+  
+      loginButton.addEventListener('click', (e) => {
+        makeCall("POST", 'CheckLogin', e.target.closest("form"), cBack);
+      });
+  
+      registrationButton.addEventListener('click', (e) => {
+        makeCall("POST", 'CreateUser', e.target.closest("form"), cBack);
+      })
 
-    document.getElementById("goToRegister").addEventListener('click', () =>{
-      loginDiv.style.display = 'none';
-      registrationDiv.style.display = 'block';
-    });
-
-    document.getElementById("goToLogin").addEventListener('click', () =>{
-      loginDiv.style.display = 'block';
-      registrationDiv.style.display = 'hidden';
-    });
+    }
 
 
-    loginButton.addEventListener('click', (e) => {
-      var form = e.target.closest("form");
-      if (form.checkValidity()){
-        makeCall("POST", 'CheckLogin', form, cBack);
-      }else{
-        form.reportValidity();
-      }
-    });
+    this.showLoginPage = function(){
+      loginBox.style.display = 'block';
+      registrationBox.style.display = 'none';
+    }
+    this.showRegistrationPage = function(){
+      loginBox.style.display = 'none';
+      registrationBox.style.display = 'block';
 
-    registrationButton.addEventListener('click', (e) => {
-      var form = e.target.closest("form");
-      if (form.checkValidity()){
-        makeCall("POST", 'CreateUser', form, cBack);
-      }else{
-        form.reportValidity();
-      }
-    })
+    }
+
 
 })();

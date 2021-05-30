@@ -1,0 +1,25 @@
+.boxed {
+	border: 1px solid black;
+}
+
+th.sortable, .up, .down {
+	cursor: pointer;
+}
+ 
+.boldarrow{
+	color: red;
+	font-weight: bold;
+}
+
+.normalarrow{
+	color: black;
+	font-weight: normal;
+}
+
+.selected{
+	color: red;
+}
+
+.notselected{
+	color: black;
+}
