@@ -52,7 +52,6 @@
         var album = songsMap[1];
 
         var image = playerBox.querySelector("img");
-        var source = playerBox.querySelector("source");
         
 
         this.show = function(){
@@ -292,7 +291,7 @@
 
         this.hide = function(){
             userPlaylistsBox.style.display = 'none';
-            createPlaylistBox.style.display = 'none';
+            eBox.style.display = 'none';
 
         }
 
