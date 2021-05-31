@@ -3,6 +3,7 @@
     //objects
     var userInfo, errorMessage, userPlaylists, createAlbum, createSong, currPlaylist, currPlayer;
     var homePageBtnContainer, logoutBtnContainer;
+    var creationContainer = document.getElementById("creationContainer");
     var playlistBox = document.getElementById("playlistBox");
     var playerBox = document.getElementById("playerBox");
     //main controller
@@ -33,7 +34,11 @@
         var user = JSON.parse(sessionStorage.getItem("user"));
 
         this.show  = function(){
-            container.querySelector("h2").textContent =  "Welcome " + user.username;
+            if(user != null){
+                container.querySelector("h2").textContent =  "Welcome " + user.username;
+            }else{
+                container.querySelector("h2").textContent =  "User not found";
+            }
             container.style.display = 'block';
 
         }
@@ -48,11 +53,7 @@
 
         var image = playerBox.querySelector("img");
         var source = playerBox.querySelector("source");
-
-        var returnBack = playerBox.querySelector("a");
-        returnBack.addEventListener("click", ()=>{
-            pageOrchestrator.showPlaylistPage();
-        })
+        
 
         this.show = function(){
             playerBox.querySelector("#songTitlePlayer").textContent = song.title;
@@ -65,16 +66,28 @@
             image.alt = album.imageUrl;
             image.setAttribute("width", "250px");
             image.setAttribute("height", "250px");
-
-            source.src = "ShowFile/audio_"+song.songUrl;
+            
+            var audioSource = document.createElement("source");
+            audioSource.type = "audio/ogg";
+            audioSource.src = "ShowFile/audio_"+song.songUrl;
+            playerBox.querySelector("audio").appendChild(audioSource)
+            
 
             playerBox.style.display = 'block';
 
         }
 
+        this.registerEvents = function(){
+            playerBox.querySelector("a").addEventListener("click", () =>{
+                pageOrchestrator.showPlaylistPage();
+            });
+        }
+
+        
+
     }
 
-    function Playlist(playlist){
+    function Playlist(playlist){        
         var customMsgPlaylist = document.getElementById("playlistName");
         var playlistBox = document.getElementById("playlistBox");
         var addSongToPlaylistBox = document.getElementById("addSongToPlaylist");
@@ -116,17 +129,16 @@
                         var songs = JSON.parse(req.responseText);
                         if (songs.length > 0){
                             addSongToPlaylistBox.style.display = "block";
+                            var select = addSongToPlaylistBox.querySelector("select");
+                            songs.forEach(x => {
+                                var option = document.createElement("option");
+                                option.text = x.title;
+                                option.value = x.id;
+                                select.appendChild(option);
+                            });
                         }else{
                             addSongToPlaylistBox.style.display = "none";
-                            return;
-                        }
-                        var select = addSongToPlaylistBox.querySelector("select");
-                        songs.forEach(x => {
-                            var option = document.createElement("option");
-                            option.text = x.title;
-                            option.value = x.id;
-                            select.appendChild(option);
-                        });
+                        }                        
                     }else{
                         pageOrchestrator.showErrorPage(req.status, req.responseText);
                     }
@@ -154,7 +166,7 @@
             }else{
                 prevBtn.style.display = 'block';
             }
-            Array.from(document.querySelectorAll("tr")).forEach(x => x.innerHTML = "");
+            //Array.from(document.querySelectorAll("tr")).forEach(x => x.innerHTML = "");
             for (let i = prevIdx; i < playlistSongs.length; i++){
                 var song = playlistSongs[i][0];
                 var album = playlistSongs[i][1];
@@ -163,7 +175,12 @@
                 var linkTitle = document.createElement("a");
                 linkTitle.appendChild(document.createTextNode(song.title));
                 linkTitle.addEventListener("click", () =>{
-                    currPlayer = new Player(playlistSongs[i]);
+                    if (currPlayer == undefined){
+                        currPlayer = new Player(playlistSongs[i]);
+                        currPlayer.registerEvents();
+                    }else{
+                        currPlayer = new Player(playlistSongs[i]);
+                    }
                     pageOrchestrator.showPlayerPage();
                 });
                 linkTitle.href = "#";
@@ -235,7 +252,7 @@
             playlistSongs = new Array();
             addSongToPlaylistBox.querySelector("select").innerHTML = "";
             playlistBox.querySelector("p").innerHTML = "";
-            Array.from(playerBox.querySelectorAll("tr")).forEach(x => x.innerHTML="");
+            Array.from(playlistBox.querySelectorAll("tr")).forEach(x => x.innerHTML="");
         }
 
     }
@@ -244,8 +261,9 @@
 
 
     function UserPlaylists(){
-        var userPlaylistsBox = document.getElementById("userPlaylistsBox");
-        var tableBody = userPlaylistsBox.querySelector("tbody");
+        var userPlaylistsBox = document.getElementById("userPlaylistBox");
+        var table = userPlaylistsBox.querySelector("table");
+        var tableBody = table.querySelector("tbody");
         var createPlaylistBox = document.getElementById("createPlaylistBox");
         var customMsg = createPlaylistBox.querySelector("p");
         var self = this;
@@ -258,7 +276,13 @@
             makeCall("GET", "GetUserPlaylist", null, function(req){
                 if (req.readyState == 4){
                     if(req.status == 200){
-                        self.update(JSON.parse(req.responseText));
+                        var response = JSON.parse(req.responseText);
+                        if (response.length == 0){
+                            userPlaylistsBox.querySelector("p").textContent = "No playlists yet";
+                            table.style.display = 'none';
+                        }else{
+                            self.update(response);
+                        }
                     }else{
                         pageOrchestrator.showErrorPage(req.status, req.responseText);
                     }
@@ -273,6 +297,9 @@
         }
 
         this.update = function(playlists){
+            table.style.display = 'block';
+            userPlaylistsBox.querySelector("p").innerHTML = "";
+
             playlists.forEach(function(playlist){
                 var row = document.createElement("tr");
                 var nameCell = document.createElement("td");
@@ -297,7 +324,7 @@
                 reorderCell.appendChild(linkReorder);
                 var linkText = document.createTextNode("Reorder");
                 linkReorder.appendChild(linkText);
-                linkReorder.href = "ReorderPage.html?idPlaylist=" + playlist.id;
+                linkReorder.href = "ReorderPage.html?idPlaylist=" + playlist.id +"&titlePlaylist=" + playlist.title;
                 row.appendChild(reorderCell);
 
                 tableBody.appendChild(row);
@@ -311,7 +338,7 @@
                             var array = new Array();
                             array.push(JSON.parse(req.responseText));
                             self.update(array);
-                            pageOrchestrator.showLocalMessage(customMsg, "Playlist" + array[0].title + "inserted correctly");
+                            pageOrchestrator.showLocalMessage(customMsg, "Playlist " + array[0].title + "inserted correctly");
                         }else if (req.status == 400){
                             pageOrchestrator.showLocalMessage(customMsg, req.responseText);
                         }else{
@@ -330,7 +357,7 @@
 
     function CreateAlbum(){
         var createAlbumBox = document.getElementById("createAlbumBox");
-        var customMsg = document.querySelector(".customMsg");
+        var customMsg = createAlbumBox.querySelector(".customMsg");
         createAlbumBox.querySelector("input[type = 'button'").addEventListener("click", (e) => {
             makeCall("POST", "CreateAlbum", e.target.closest("form"), function(req){
                 if (req.readyState == 4){
@@ -381,11 +408,13 @@
         })
 
         this.updateAlbumList = function(album){
-            var select = document.querySelector("select");
+            var select = createSongBox.querySelector("select");
+            select.style.display = 'block';
             var newOption = document.createElement("option");
             newOption.text = album.title;
             newOption.value = album.id;
             select.appendChild(newOption);
+            
         }
 
         this.show = function(){
@@ -397,6 +426,13 @@
                         albums.forEach(x =>{
                             self.updateAlbumList(x)
                         });
+
+                        if (albums.length > 0){
+                            document.getElementById("noAlbumLabel").style.display = 'none';
+                        }else{
+                            createSongBox.querySelector("select").style.display = 'none';
+                        }
+                        
                     }else if (req.status == 400){
                         pageOrchestrator.showLocalMessage(customMsg, req.responseText);
                     }else{
@@ -442,6 +478,7 @@
 
         this.showHomePage = function(){
             this.reset();
+            creationContainer.style.display ='block';
             userInfo.show();
             userPlaylists.show();
             createAlbum.show();
@@ -474,6 +511,7 @@
 
         this.reset = function(){
             homePageBtnContainer.style.display = 'none';
+            creationContainer.style.display = 'none';
             userInfo.hide();
             errorMessage.hide();
             userPlaylists.hide();

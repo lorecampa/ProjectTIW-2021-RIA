@@ -44,7 +44,8 @@ public class CheckLogin extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String email = request.getParameter("email");
 		String pwd = request.getParameter("password");
-		
+
+
 
 		if (email == null || pwd == null || email.isEmpty() || pwd.isEmpty() ) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -61,6 +62,7 @@ public class CheckLogin extends HttpServlet {
 			response.getWriter().println(e.getMessage());
 			return;
 		}
+
 		
 		if (user == null) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

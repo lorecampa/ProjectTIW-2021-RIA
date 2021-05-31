@@ -2,17 +2,19 @@
 <head>
 <title>Login</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" type="text/css" href="css/global.css"/>
+<link rel="stylesheet" type="text/css" href="css/login.css"/>
 <script src="utils.js" charset="utf-8" defer></script>
 <script src="login.js" charset="utf-8" defer></script>
 </head>
 <body>
 
 
-	<h1>Welcome to Music Playlist application</h1>
+	<h1>Welcome to Music Playlist application [RIA]</h1>
 	
     
 	<p id ="errorMessage"></p>
-	<div id = "loginBox">
+	<div class = "formBox" id = "loginBox">
 		<form action = "#">
 			<label>Email</label><input name = "email" type="text" required>
 			<label>Password</label><input name = "password" type = "password" required>
@@ -22,7 +24,7 @@
 		<a href="#">Are you still not registered? Do it now!</a>
 	</div>
 
-	<div id ="registrationBox">
+	<div class = "formBox" id ="registrationBox">
 		<form action="#">
 			
 			<label>Username </label>

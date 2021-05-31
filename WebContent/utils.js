@@ -22,9 +22,10 @@ function makeCall(method, url, formElement, cback, isForm){
         }
     }
 
-    if (isForm != undefined && isForm && formElement != null){
+    if (formElement != undefined && formElement != null && isForm == undefined){
         formElement.reset();
     }
+    
 }
 
 

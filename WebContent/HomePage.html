@@ -4,11 +4,14 @@
 <meta charset="UTF-8">
 <title>HomePage</title>
 </head>
-
+<link rel="stylesheet" type="text/css" href="css/global.css"/>
+<link rel="stylesheet" type="text/css" href="css/homepage.css"/>
 <script src="utils.js" charset="utf-8" defer></script>
 <script src="homePage.js" charset="utf-8" defer></script>
-<body>
 
+
+
+<body>
 	<ul>
         <li id = "personalMessage"><h2></h2></li>
 		<li id ="homePageBtnContainer" style="float: left;">
@@ -23,97 +26,133 @@
 		</li>
     </ul> 
 
-	<div id = "userPlaylistBox">
-		<table id ="userPlaylistsBox">
-			<thead>
-				<tr>
-					<th>Playlists</th>
-					<th>Date</th>
-					<th>Reorder</th>
-				</tr>
-			</thead>
-			<tbody id ="userPlaylistsBody"></tbody>
-		</table>
-	</div>
-	
-	<div id ="createPlaylistBox">
-		<h3>Create Playlist</h3>
-		<form action = "#">
-			<p class = "customMsg"></p>
-			<label>Title </label><input name = "name" type="text" required>
-			<input value = "create" type = "button">
-		</form>
-	</div>
-	
-	<div id = "createSongBox">
-		<h2>Create Song</h2>
-    	<form method= "POST" action = "#">
-			<p class = "customMsg"></p>
 
-			<label>Title</label> 
-			<input name = "title" id="title" type="text" required>
 
-			<label>Albums </label>
-			<select name= "albums"  required></select>
 
-			<input name = "audio" type="file"required>
-				Audio Upload
-			<input value = "create" type = "button">		
-		</form>  
-	</div>
-	        
+	<div id = "creationContainer">
 
+		<div class = "formBox" id = "userPlaylistBox">
+			<p></p>
+			<table>
+				<thead>
+					<tr>
+						<th>Playlists</th>
+						<th>Date</th>
+						<th>Reorder</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>AAA</td>
+						<td>BBB</td>
+						<td>0</td>
+					</tr>
+					<tr>
+						<td>AAA</td>
+						<td>BBB</td>
+						<td>0</td>
+					</tr>
+					<tr>
+						<td>AAA</td>
+						<td>BBB</td>
+						<td>0</td>
 	
-	<div id = "createAlbumBox">
-		<h2>Create Album</h2>
-		<form method= "POST" action = "#" enctype="multipart/form-data">
-			<p class = "customMsg"></p>
+					</tr>
+				</tbody>
+			</table>
 
-			<p>Title</p> 
-			<input name = "title" type="text" required>
-	
-			<p>Interpreter</p> 
-			<input name = "interpreter" type="text" required>
-	
-			<p>Year</p> 
-			<input name = "year" type="number" min=0 required>
-	
-			<p>Genre</p>
-			<select name= "genre" required>
-				<option value= "Rock">Rock</option>
-				<option value= "Pop">Pop</option>
-				<option value= "Electronic">Electronic</option>
-				<option value= "Soul">Soul</option>
-				<option value= "Funk">Funk</option>
-				<option value= "Country">Country</option>
-				<option value= "Latin">Latin</option>
-				<option value= "Reggae">Raggae</option>
-				<option value= "Hip Hop">Hip Hop</option>
-				<option value= "Punk">Punk</option>
-				<option value= "Polka">Polka</option>                 
-			</select>
-	
-			<div>
-				<input name = "picture" type="file" required>
-				Image Upload
+			<div id ="createPlaylistBox">
+				<h2>Create Playlist</h2>
+				<form action = "#">
+					<p class = "customMsg"></p>
+					<label>Title </label><input name = "name" type="text" required>
+					<input value = "create" type = "button">
+				</form>
 			</div>
-			
-			<input value = "createAlbum" type = "button">		
-		</form>
+		</div>
+
+		
+		
+		<div class = "formBox" id = "createSongBox">
+			<h2>Create Song</h2>
+			<form method= "POST" action = "#">
+				<p class = "customMsg"></p>
+	
+				<label>Title</label> 
+				<input name = "title" id="title" type="text" required>
+	
+				<label>Albums </label>
+				<label id = "noAlbumLabel">no albums yet </label>
+				<select class = "custom-select" name= "albums"  required></select>
+				
+				<div class = "custom-upload">
+					<input  name = "audio" type="file"required>
+					<label>Audio Upload </label>
+				</div>
+				
+				<input value = "create" type = "button">		
+			</form>  
+		</div>
+				
+	
+		
+		<div class = "formBox" id = "createAlbumBox">
+			<h2>Create Album</h2>
+			<form action = "#" enctype="multipart/form-data">
+				<p class = "customMsg"></p>
+	
+				<label>Title</label>
+				<input name = "title" type="text" required>
+		
+				<label>Interpreter</label> 
+				<input name = "interpreter" type="text" required>
+		
+				<label>Year</label> 
+				<input name = "year" type="number" min=0 required>
+		
+				<label>Genre</label>
+				<select class = "custom-select" name= "genre" required>
+					<option value= "Rock">Rock</option>
+					<option value= "Pop">Pop</option>
+					<option value= "Electronic">Electronic</option>
+					<option value= "Soul">Soul</option>
+					<option value= "Funk">Funk</option>
+					<option value= "Country">Country</option>
+					<option value= "Latin">Latin</option>
+					<option value= "Reggae">Raggae</option>
+					<option value= "Hip Hop">Hip Hop</option>
+					<option value= "Punk">Punk</option>
+					<option value= "Polka">Polka</option>                 
+				</select>
+				<div class="custom-upload">
+					<input name = "picture" type="file" required>
+					<label>Image Upload</label>
+				</div>
+				
+				<input value = "create Album" type = "button">		
+			</form>
+		</div>
 	</div>
-	
+
+
+
 	
 	
 
 
-	<div id="playlistBox">
+
+	<div class = "formBox" id="playlistBox">
 		<p id = "playlistName"></p>
 		<table>
 			<thead>
-				<tr></tr>
+				<tr>
+					
+				</tr>
 			</thead>
 			<tbody>
-				<tr></tr>
+				<tr>
+
+				</tr>
 			</tbody>
 		</table>
 
@@ -129,8 +168,8 @@
 			<h2>Add Song to Playlist</h2>
 			<form action = "#">
 				<p class = "customMsg"></p>
-				<p>Songs created</p>
-				<select name= "songSelected" required></select>
+				<label>Songs created</label>
+				<select class = "custom-select" name= "songSelected" required></select>
 				<input value = "add to playlist" type = "button">
 			</form>
 		</div>
@@ -138,22 +177,26 @@
 	</div>
 
 
-	<div id="playerBox">
-		<h1 id = "songTitlePlayer"></h1>
+	<div class = "formBox" id="playerBox">
+		<h1 id = "songTitlePlayer">Title song</h1>
 		<p id = "albumTitlePlayer"> Album </p>
 		<p id = "albumInterpreterPlayer"> Interpreter</p>
 		<p id = "albumYearPlayer"> Year</p>
 		<p id = "albumGenrePlayer"> Genre</p>
 		<img>
 		<audio controls = "">
-			<source type="audio/ogg">
+			
 		</audio>
-		<a href = "#">return to playlist</a>
+		<a href = "#">Return back to playlist</a>
 	</div>
 
+
 	<div id = "errorMessageBox">
-		<h1></h1>
+		<h1>[Status] Error 500</h1>
+		<p>[body] internal server error</p>
 	</div>
+
+
 	
 </body>
 </html>

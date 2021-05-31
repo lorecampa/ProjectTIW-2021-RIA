@@ -4,6 +4,7 @@
     var tbody;
     var errorBox;
     var idPlaylist;
+    var titlePlaylist;
     var songsOrdered;
 
     window.addEventListener("load", ()=>{
@@ -16,6 +17,9 @@
         tbody.innerHTML = "";
         const urlParams = new URLSearchParams(window.location.search);
         idPlaylist = urlParams.get('idPlaylist');
+        titlePlaylist = urlParams.get('titlePlaylist');
+        document.querySelector("h2").textContent = titlePlaylist;
+
         makeCall("GET", "GetSongsOfPlaylist?idPlaylist="+idPlaylist, null, function(req){
             if (req.readyState == 4){
                 if(req.status == 200){
