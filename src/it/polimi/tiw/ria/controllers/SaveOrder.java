@@ -16,8 +16,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import it.polimi.tiw.ria.beans.Playlist;
 import it.polimi.tiw.ria.beans.SongOrder;
+import it.polimi.tiw.ria.beans.User;
 import it.polimi.tiw.ria.dao.MatchDAO;
+import it.polimi.tiw.ria.dao.PlaylistDAO;
 import it.polimi.tiw.ria.utils.ConnectionHandler;
 
 
@@ -43,6 +46,7 @@ public class SaveOrder extends HttpServlet {
 
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		User user = (User) request.getSession().getAttribute("user");
 		BufferedReader reader =  request.getReader();
 		ArrayList<SongOrder> playlistOrder = new Gson().fromJson(reader, new TypeToken<ArrayList<SongOrder>>(){}.getType());
 		int idPlaylist;
@@ -51,6 +55,21 @@ public class SaveOrder extends HttpServlet {
 		}catch(Exception e) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Error parsing idPlaylist");
+			return;
+		}
+		
+		PlaylistDAO playlistDAO = new PlaylistDAO(connection);
+		Playlist playlist = null;
+		try {
+			playlist = playlistDAO.findPlaylistById(idPlaylist);
+		} catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(e.getMessage());
+			return;
+		}
+		if (playlist.getIdCreator() != user.getId()) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println("You are trying to access wrong information");
 			return;
 		}
 		

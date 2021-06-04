@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import it.polimi.tiw.ria.beans.Song;
 
 public class SongDAO {
@@ -80,4 +79,31 @@ private Connection con;
 		return result;
 		
 	}
+	
+	//return null if song is not present
+	public Song findSongById(int songId) throws SQLException {
+		Song song = null;
+		String query = "SELECT * FROM MusicPlaylistdb.Song WHERE id = ?";
+
+		try (PreparedStatement pstatement = con.prepareStatement(query);) {
+			pstatement.setInt(1, songId);
+			
+			try (ResultSet result = pstatement.executeQuery();) {
+				
+				if (result.next()) {
+					song = new Song();
+					song.setId(songId);
+					song.setTitle(result.getString("title"));
+					song.setSongUrl(result.getString("songUrl"));
+					song.setIdAlbum(result.getInt("idAlbum"));
+				}
+			}
+		}
+		
+		
+		return song;
+	}
+	
+	
+	
 }

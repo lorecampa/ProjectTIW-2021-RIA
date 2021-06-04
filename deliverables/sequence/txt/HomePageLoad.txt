@@ -1,0 +1,34 @@
+
+
+participant HomePage.html
+participant PageOrchestrator
+participant UserInfo
+participant UserPlaylists
+participant CreateAlbum
+participant CreateSong
+
+
+
+note left of HomePage.html: util.js and \nhomePage.js scripts
+
+
+HomePage.html ->PageOrchestrator: start()
+
+PageOrchestrator->CreateSong: registerEvents()
+PageOrchestrator->CreateAlbum: registerEvents()
+PageOrchestrator->UserPlaylists: registerEvents()
+
+
+activate PageOrchestrator
+note left of PageOrchestrator: pageOrchestrator.\nshowHomePage()\nmethod
+
+PageOrchestrator ->UserInfo: show()
+note right of UserInfo: sessionStorage.\ngetItem("user")
+PageOrchestrator ->CreateSong: show()
+note left of CreateSong: send a "GET" AJAX \ncall for retriving user\nalbums
+PageOrchestrator ->CreateAlbum: show()
+PageOrchestrator ->UserPlaylists: show()
+note right of UserPlaylists: send a "GET" AJAX \ncall for retriving user\n playlists
+
+
+deactivate PageOrchestrator

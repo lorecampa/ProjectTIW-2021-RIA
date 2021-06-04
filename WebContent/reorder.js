@@ -2,7 +2,7 @@
 
     var sortingBox;
     var tbody;
-    var errorBox;
+    var errorMessageBox;
     var idPlaylist;
     var titlePlaylist;
     var songsOrdered;
@@ -11,8 +11,8 @@
         sortingBox = document.getElementById("sortingBox");
         tbody = sortingBox.querySelector("tbody");
 
-        errorBox = document.getElementById("errorBox");
-        errorBox.style.display = 'none';
+        errorMessageBox = document.getElementById("errorMessageBox");
+        errorMessageBox.style.display = 'none';
 
         tbody.innerHTML = "";
         const urlParams = new URLSearchParams(window.location.search);
@@ -29,11 +29,10 @@
                         orderSongs(playlistSongs).forEach(x => songsOrdered.push(x[0]));
                         loadSongs();
                     }else{
-                        setError("There are not songs in playlist");
+                        setNormalMessage("There are not songs in playlist");
                     }
-                    
                 }else{
-                    setError(req.responseText);
+                    setError(req.status, req.responseText);
                 }
             }
         });
@@ -44,9 +43,12 @@
                 if (req.readyState == 4){
                     if(req.status == 200){
                         //order saved
-                        document.querySelector("p").textContent = "Order saved correctly";
+                        var msgContainer = sortingBox.querySelector("p");
+                        msgContainer.textContent = "Order saved correctly";
+                        msgContainer.style.display = 'block';
+
                     }else{
-                        setError(req.responseText);
+                        setError(req.status, req.responseText);
                     }
                 }
             }, false);
@@ -88,31 +90,39 @@
             row.appendChild(dateAddingCell)
             row.appendChild(hiddenIdBeforeCell);
             row.appendChild(hiddenIdCell);
-
             registerDragEvents(row);
+
+
             tbody.appendChild(row);
         })
     }
 
 
-    function setError(msg){
+    function setError(status, msg){
         sortingBox.style.display = 'none';
-        errorBox.style.display = 'block';
-        errorBox.querySelector("p").textContent = msg;
+        errorMessageBox.style.display = 'block';
+        errorMessageBox.querySelector("h1").style.display = 'block';
+        errorMessageBox.querySelector("h1").textContent = status;
+        errorMessageBox.querySelector("p").textContent = msg;
+    }
+
+    function setNormalMessage(msg){
+        sortingBox.style.display = 'none';
+        errorMessageBox.style.display = 'block';
+        errorMessageBox.querySelector("h1").style.display = 'none';
+        errorMessageBox.querySelector("p").textContent = msg;
+
     }
 
 
     function saveOrder(){
         var array = Array.from(document.querySelectorAll('tbody > tr'));
         var arrayToSend = new Array();
-        var elemBefore;
         for (var i = 0; i < array.length; i++){
-            if (i == 0){
-                array[i].querySelector("#idSongBefore").textContent = "0";
-                elemBefore = array[i];
+            if (i != array.length - 1){
+                changeIdBefore(array[i], array[i+1]);
             }else{
-                changeIdBefore(array[i], elemBefore);
-                elemBefore = array[i];
+                array[i].querySelector("#idSongBefore").textContent = "0";
             }
             var song = new SongUpdated(array[i].querySelector("#idSong").textContent,array[i].querySelector("#idSongBefore").textContent);
             arrayToSend.push(song);

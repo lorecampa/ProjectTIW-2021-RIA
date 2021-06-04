@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,7 +19,6 @@ public class ShowFile extends HttpServlet {
 	String audioPath = "";
 
 	public void init() throws ServletException {
-		ServletContext servletContext = getServletContext();
 		// get folder path from webapp init parameters inside web.xml
 		imagePath = getServletContext().getInitParameter("imagePath");
 		audioPath = getServletContext().getInitParameter("audioPath");

@@ -1,0 +1,7 @@
+participant Playlists
+participant PageOrchestrator
+participant Player
+
+Playlists ->Player: new Player(playlist)
+Playlists ->PageOrchestrator: showPlayerPage()
+Player ->Player: set all HTML\nelements

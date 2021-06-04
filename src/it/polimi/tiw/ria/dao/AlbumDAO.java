@@ -6,9 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-
 import it.polimi.tiw.ria.beans.Album;
-import it.polimi.tiw.ria.beans.User;
 
 public class AlbumDAO {
 private Connection con;

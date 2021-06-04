@@ -3,8 +3,6 @@ package it.polimi.tiw.ria.controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -12,9 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import com.google.gson.Gson;
-
 import it.polimi.tiw.ria.beans.Playlist;
 import it.polimi.tiw.ria.beans.User;
 import it.polimi.tiw.ria.dao.PlaylistDAO;
@@ -53,10 +49,10 @@ public class CreatePlaylist extends HttpServlet {
 		}
 		
 		PlaylistDAO playlistDAO = new PlaylistDAO(connection);
-		int created = 0;
+		int idPlaylist;
 		try {
-			//return 0 if playlist is already present
-			created = playlistDAO.createPlaylist(playlistName, user.getId());
+			//return -1 if playlist is already present
+			idPlaylist = playlistDAO.createPlaylist(playlistName, user.getId());
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println(e.getMessage());
@@ -65,14 +61,16 @@ public class CreatePlaylist extends HttpServlet {
 		
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
-		if (created == 0) {
+		if (idPlaylist == -1) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Playlist was already present");
 
 		}else {
+			
 			response.setStatus(HttpServletResponse.SC_OK);
-			Playlist playlist = new Playlist(playlistName, user.getId());
+			Playlist playlist = new Playlist(idPlaylist, playlistName, user.getId());
 			response.getWriter().println(new Gson().toJson(playlist));
+			System.out.println("Playlist created: idCreator ->" + playlist.getIdCreator());
 
 		}
 		

@@ -146,4 +146,23 @@ h2{
 
 }
 
-  
+td > a{
+    margin-top: 0;
+}
+
+th{
+    text-align: center;
+}
+
+
+#errorMessageBox{
+    font-size: larger;
+}
+
+#errorMessageBox h1{
+    color: red;
+}
+
+#errorMessageBox p{
+    font-family: fantasy;
+}

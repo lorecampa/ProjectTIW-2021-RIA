@@ -16,8 +16,8 @@ function makeCall(method, url, formElement, cback, isForm){
         if (formElement.checkValidity()){
             req.send(new FormData(formElement))
         }else{
-            var customMsg = document.querySelector(".customMsg");
-            customMsg.textContent = formElement.reportValidity();
+            var customMsg = formElement.querySelector(".customMsg");
+            customMsg.textContent = "Form inputs not valid";
             customMsg.style.display = 'block';
         }
     }
@@ -46,13 +46,13 @@ function orderSongs(songsMap){
     while (songsMap.length != 0){
         for (let i = 0; i < songsMap.length; i++){
             if (songsMap[i][0].idSongBefore == lastId){
-                songsOrdered.push(songsMap[i]);
+                songsOrdered.unshift(songsMap[i]);
                 lastId = songsMap[i][0].id;
                 songsMap.splice(i, 1);
                 break;
             }
             if (i == songsMap.length - 1){
-                setError("Error while sorting playlist songs");
+                //problem
                 return;
             }
         }

@@ -13,7 +13,8 @@ public class Playlist {
 		super();
 	}
 	
-	public Playlist(String title, int idCreator) {
+	public Playlist(int id, String title, int idCreator) {
+		this.id = id;
 		this.title = title;
 		this.idCreator = idCreator;
 		setCurrentDate();

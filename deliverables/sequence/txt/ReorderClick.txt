@@ -1,0 +1,30 @@
+participant UserPlaylist
+participant ReorderPage.html
+participant GetSongsOfPlaylist#orange
+participant PlaylistDAO#orange
+participant utils.js
+participant SaveOrder#orange
+participant MatchOrder#orange
+
+
+UserPlaylist ->ReorderPage.html: redirect
+
+ReorderPage.html ->GetSongsOfPlaylist: "GET" AJAX calls
+GetSongsOfPlaylist ->PlaylistDAO: findPlaylistsSongs(idPlaylist)
+PlaylistDAO -->GetSongsOfPlaylist: songs
+GetSongsOfPlaylist -->ReorderPage.html: songs
+
+
+note left of ReorderPage.html: order songs\nbased on\nits idSongBefore\ndatabase attribute
+ReorderPage.html ->utils.js: orderSongs(songs)
+utils.js -->ReorderPage.html: songsOrdered
+
+
+note over ReorderPage.html: user makes changes
+
+note left of ReorderPage.html: click save\nbutton
+ReorderPage.html ->SaveOrder: "POST" AJAX method
+
+SaveOrder ->MatchOrder: updateSongOrder()
+
+SaveOrder -->ReorderPage.html: SC_OK

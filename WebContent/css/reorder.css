@@ -21,13 +21,13 @@ table{
     font-family:'Courier New', Courier, monospace;
     border-collapse: collapse;
     width: max-content;
-	font-size: 30px;
+	font-size: 20px;
 }
 
 
 tr td{
     border: 1px solid #ffffff;
-    padding: 25px 25px 25px 25px;
+    padding: 15px;
 }
 th{
 	padding-bottom: 10px;
@@ -45,5 +45,9 @@ tbody tr:nth-child(odd){
 
 tbody tr:nth-child(odd):hover{
     background-color: brown;
+}
+
+#sortingBox p{
+    color:red;
 }
 

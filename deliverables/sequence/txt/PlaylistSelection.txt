@@ -1,0 +1,28 @@
+participant UserPlaylits
+participant Playlist
+participant PageOrchestrator
+participant GetSongsOfPlaylist#orange
+participant GetUserSongsNotInPlaylist#orange
+participant PlaylistDAO#orange
+
+note left of UserPlaylits: click on\nplaylist \ntitle
+
+UserPlaylits ->Playlist: new Playlist()
+UserPlaylits ->Playlist: registerEvents()
+UserPlaylits ->PageOrchestrator: showPlaylistPage()
+
+Playlist ->GetSongsOfPlaylist: AJAX "GET"\nmethod
+GetSongsOfPlaylist ->PlaylistDAO: findPlaylistSongs(idPlaylist)
+PlaylistDAO -->GetSongsOfPlaylist: songs
+
+GetSongsOfPlaylist -->Playlist: songs
+
+Playlist ->Playlist: update()
+
+Playlist ->GetUserSongsNotInPlaylist: AJAX "GET" method
+GetUserSongsNotInPlaylist ->PlaylistDAO: getAllUserSongs\nNotInPlaylist(idUser,idPlaylist)
+PlaylistDAO -->GetUserSongsNotInPlaylist: userSongsNotInPlaylist
+
+GetUserSongsNotInPlaylist -->Playlist: userSongsNotInPlaylist
+
+Playlist ->Playlist: add new HTML\noption elements

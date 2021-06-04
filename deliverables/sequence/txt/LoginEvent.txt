@@ -1,0 +1,27 @@
+title Login Event
+
+
+participant LoginPage.html
+
+participant CheckLogin#orange
+
+participant UserDAO#orange
+
+participant Session#orange
+
+note left of LoginPage.html: util.js and \nlogin.js scripts
+
+
+note left of LoginPage.html: login\nbutton
+
+LoginPage.html ->CheckLogin: "POST" AJAX
+
+CheckLogin ->UserDAO: checkCredentials(email, pwd)
+UserDAO -->CheckLogin: user
+
+
+CheckLogin ->Session: setAttribute("user", user)
+
+LoginPage.html ->LoginPage.html: sessionStorage.setItem("user")
+
+

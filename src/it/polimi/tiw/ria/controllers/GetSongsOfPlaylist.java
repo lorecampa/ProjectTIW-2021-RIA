@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
-
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -15,6 +14,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import it.polimi.tiw.ria.beans.Album;
+import it.polimi.tiw.ria.beans.Playlist;
 import it.polimi.tiw.ria.beans.Song;
 import it.polimi.tiw.ria.beans.User;
 import it.polimi.tiw.ria.dao.PlaylistDAO;
@@ -37,8 +37,7 @@ public class GetSongsOfPlaylist extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int idUser = ((User) request.getSession().getAttribute("user")).getId();
-		
+		User user = (User) request.getSession().getAttribute("user");
 		int idPlaylist;
 		try {
 			idPlaylist = Integer.parseInt(request.getParameter("idPlaylist"));
@@ -47,18 +46,34 @@ public class GetSongsOfPlaylist extends HttpServlet {
 			response.getWriter().println(e.getMessage());
 			return;
 		}
-		
-		
-		
-		
+		//finding playlist bean
 		PlaylistDAO playlistDAO = new PlaylistDAO(connection);
+		Playlist playlist = null;
+		try {
+			playlist = playlistDAO.findPlaylistById(idPlaylist);
+		} catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(e.getMessage());
+			return;
+		}
+
+
+		
+		
+		//control that the playlist belongs to the user session
+		if(playlist == null || (playlist.getIdCreator() != user.getId())) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println("You are trying to access wrong information");
+			return;
+		}		
+		
+		
 		HashMap<Song, Album> songs = new HashMap<>();
 		try {
 			songs = playlistDAO.findPlaylistSongs(idPlaylist);
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			response.getWriter().println(e.getMessage());
-			e.printStackTrace();
 			return;
 		}
 		Gson gson = new GsonBuilder().enableComplexMapKeySerialization().create();

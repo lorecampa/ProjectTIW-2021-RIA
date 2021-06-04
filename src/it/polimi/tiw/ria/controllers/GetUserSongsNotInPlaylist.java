@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 
+import it.polimi.tiw.ria.beans.Playlist;
 import it.polimi.tiw.ria.beans.Song;
 import it.polimi.tiw.ria.beans.User;
 import it.polimi.tiw.ria.dao.PlaylistDAO;
@@ -52,7 +53,24 @@ public class GetUserSongsNotInPlaylist extends HttpServlet {
 			return;
 		}
 		
+		//finding playlist bean
 		PlaylistDAO playlistDAO = new PlaylistDAO(connection);
+		Playlist playlist = null;
+		try {
+			playlist = playlistDAO.findPlaylistById(idPlaylist);
+		} catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println(e.getMessage());
+			return;
+		}
+		
+		//control that the playlist belongs to the user session
+		if(playlist == null || (playlist.getIdCreator() != user.getId())) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println("You are trying to access wrong information");
+			return;
+		}			
+		
 		ArrayList<Song> userSongsNotInPlaylist;
 		try {
 			userSongsNotInPlaylist = playlistDAO.findAllUserSongsNotInPlaylist(idUser, idPlaylist);

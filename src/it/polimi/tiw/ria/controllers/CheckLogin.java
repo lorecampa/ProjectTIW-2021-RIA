@@ -11,10 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import com.google.gson.Gson;
-
 import it.polimi.tiw.ria.beans.User;
 import it.polimi.tiw.ria.dao.UserDAO;
-import it.polimi.tiw.ria.messages.UserInfo;
 import it.polimi.tiw.ria.utils.ConnectionHandler;
 
 
@@ -65,7 +63,7 @@ public class CheckLogin extends HttpServlet {
 
 		
 		if (user == null) {
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Incorrect credentials");
 			return;
 		}else {

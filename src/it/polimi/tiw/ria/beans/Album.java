@@ -1,7 +1,5 @@
 package it.polimi.tiw.ria.beans;
 
-import it.polimi.tiw.ria.beans.Genre;
-
 public class Album {
 	private int id;
 	private String title;

@@ -5,9 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-
 import it.polimi.tiw.ria.beans.Album;
-import it.polimi.tiw.ria.beans.Playlist;
 import it.polimi.tiw.ria.beans.Song;
 import it.polimi.tiw.ria.beans.SongOrder;
 
@@ -42,7 +40,6 @@ private Connection con = null;
         // for find the order position to assign
         PreparedStatement pstmt1 = null;
         
-        // for update all order number >=
         PreparedStatement pstmt2 = null;
         
         //for insertion
@@ -78,6 +75,7 @@ private Connection con = null;
             rsFindOrder = pstmt1.executeQuery();
             
 
+
             
             //if null == idSongBefore = 0
             if (rsFindOrder.next()) {
@@ -87,20 +85,16 @@ private Connection con = null;
 
             }
             	
-        	if (idSongBefore != 0) {
-        		//update
-                String query2 = "UPDATE MusicPlaylistDb.MatchOrder as m\n"
-                		+ "SET m.idSongBefore = ?\n"
-                		+ "WHERE m.idPlaylist = ? and m.idSongBefore = ?";
-                
-                pstmt2 = con.prepareStatement(query2);
-                pstmt2.setInt(1, idSong);
-                pstmt2.setInt(2, idPlaylist);
-                pstmt2.setInt(3, idSongBefore);
-                pstmt2.executeUpdate();
-                
+            String query2 = "UPDATE MusicPlaylistDb.MatchOrder as m\n"
+            		+ "SET m.idSongBefore = ?\n"
+            		+ "WHERE m.idPlaylist = ? and m.idSongBefore = ?";
+            
+            pstmt2 = con.prepareStatement(query2);
+            pstmt2.setInt(1, idSong);
+            pstmt2.setInt(2, idPlaylist);
+            pstmt2.setInt(3, idSongBefore);
+            pstmt2.executeUpdate();
 
-        	}
         	
 
             
@@ -110,6 +104,8 @@ private Connection con = null;
             pstmt3.setInt(1, idSong);
             pstmt3.setInt(2, idPlaylist);
             pstmt3.setInt(3, idSongBefore);
+
+     
             int rowAdded = pstmt3.executeUpdate();
 
 

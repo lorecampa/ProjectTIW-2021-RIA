@@ -13,9 +13,15 @@
 	<h1>Welcome to Music Playlist application [RIA]</h1>
 	
     
-	<p id ="errorMessage"></p>
+	<div id = "errorMessageBox">
+		<h1>[Status] Error 500</h1>
+		<p>[body] internal server error</p>
+		<a href = "#">Go back to login</a>
+	</div>
+
 	<div class = "formBox" id = "loginBox">
 		<form action = "#">
+			<p class = "customMsg"></p>
 			<label>Email</label><input name = "email" type="text" required>
 			<label>Password</label><input name = "password" type = "password" required>
 			<input id = "loginButton" type = "button" value="login">
@@ -26,7 +32,7 @@
 
 	<div class = "formBox" id ="registrationBox">
 		<form action="#">
-			
+			<p class = "customMsg"></p>
 			<label>Username </label>
 			<input name = "username" type="text" required>
 			
