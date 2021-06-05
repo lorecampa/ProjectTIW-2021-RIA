@@ -60,13 +60,11 @@ private Connection con = null;
 
             //find order
             String query1  = "SELECT m.idSong FROM MusicPlaylistDb.MatchOrder as m, MusicPlaylistDb.Song as s, MusicPlaylistDb.Album as a\n"
-            		+ "WHERE m.idPlaylist = ? and s.id = m.idSong and s.idAlbum = a.id and  a.year =\n"
-            		+ "(SELECT MAX(a1.year)\n"
-            		+ "FROM MusicPlaylistDb.MatchOrder as m1, MusicPlaylistDb.Song as s1, MusicPlaylistDb.Album as a1\n"
-            		+ "WHERE m1.idPlaylist = m.idPlaylist and m1.idSong = s1.id and s1.idAlbum = a1.id and a1.year <= \n"
-            		+ "(SELECT a2.year\n"
-            		+ "FROM MusicPlaylistDb.Song as s2, MusicPlaylistDb.Album as a2\n"
-            		+ "WHERE s2.id = ? and s2.idAlbum = a2.id))\n"
+            		+ "WHERE m.idPlaylist = ? and m.idSong = s.id and s.idAlbum = a.id and a.year < \n"
+            		+ "(SELECT a1.year\n"
+            		+ "FROM MusicPlaylistDb.Song as s1, MusicPlaylistDb.Album as a1\n"
+            		+ "WHERE s1.id = ? and s1.idAlbum = a1.id)\n"
+            		+ "ORDER BY a.year DESC, m.dateAdding\n"
             		+ "LIMIT 1";
             
             pstmt1 = con.prepareStatement(query1);           
@@ -74,7 +72,6 @@ private Connection con = null;
             pstmt1.setInt(2, idSong);
             rsFindOrder = pstmt1.executeQuery();
             
-
 
             
             //if null == idSongBefore = 0
@@ -84,6 +81,7 @@ private Connection con = null;
             	idSongBefore = 0;
 
             }
+
             	
             String query2 = "UPDATE MusicPlaylistDb.MatchOrder as m\n"
             		+ "SET m.idSongBefore = ?\n"
