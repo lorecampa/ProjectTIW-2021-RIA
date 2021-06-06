@@ -12,6 +12,20 @@
 
 </head>
 <body>
+	<ul>
+		<li id ="homePageBtnContainer" style="float: left;">
+			<form action = "#">
+				<input type="button" value="HomePage" />
+			</form>
+		</li>
+		
+        <li id ="logoutBtnContainer" style="float: right;">
+			<form action = "#">
+				<input type="button" value="Logout" />
+			</form>
+		</li>
+    </ul> 
+
 	<h2>Nome Playlist</h2>
 	<div class ="formBox"id = "sortingBox">
 		<p></p>
@@ -39,15 +53,12 @@
         <form action = "#">
 			<input id="saveSorting" value = "Save" type = "button">	
 		</form>
-
-		<a href = "HomePage.html"> Return back to Home Page</a>
 	</div>
 
 
-	<div class = "formBox" id = "errorMessageBox">
+	<div id = "errorMessageBox">
 		<h1>[Status] Error 500</h1>
 		<p>[body] internal server error</p>
-		<a href="HomePage.html">go back to HomePage</a>
 	</div>
 	
 </body>

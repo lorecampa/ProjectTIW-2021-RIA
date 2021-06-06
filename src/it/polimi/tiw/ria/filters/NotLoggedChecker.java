@@ -14,15 +14,14 @@ import javax.servlet.http.HttpSession;
 
 
 
+
 @WebFilter("/NotLoggedChecker")
 public class NotLoggedChecker implements Filter {
 
     public NotLoggedChecker() {
     }
 
-	
-	public void destroy() {
-	}
+
 
 	
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -34,6 +33,7 @@ public class NotLoggedChecker implements Filter {
 		HttpSession session = req.getSession(false);
 		if (session == null || session.getAttribute("user") == null) {
 			res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println("You are not logged");
 			return;
 		}
 

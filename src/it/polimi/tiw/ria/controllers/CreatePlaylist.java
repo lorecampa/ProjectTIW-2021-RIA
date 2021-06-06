@@ -64,9 +64,7 @@ public class CreatePlaylist extends HttpServlet {
 		if (idPlaylist == -1) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Playlist was already present");
-
 		}else {
-			
 			response.setStatus(HttpServletResponse.SC_OK);
 			Playlist playlist = new Playlist(idPlaylist, playlistName, user.getId());
 			response.getWriter().println(new Gson().toJson(playlist));
@@ -75,8 +73,14 @@ public class CreatePlaylist extends HttpServlet {
 		}
 		
 		
-		
-		
+	}
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

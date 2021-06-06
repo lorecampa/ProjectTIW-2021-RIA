@@ -95,6 +95,7 @@ ul {
     overflow: hidden;
     padding: 0;
     background-color: rgb(31, 28, 28);
+    display: block;
   }
   
   li {
@@ -157,6 +158,11 @@ th{
 
 #errorMessageBox{
     font-size: larger;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
 }
 
 #errorMessageBox h1{

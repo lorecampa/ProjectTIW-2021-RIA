@@ -1,0 +1,17 @@
+participant HomePage.html
+participant AddSongToPlaylist#orange
+participant MatchDAO
+
+
+note left of HomePage.html: homePage.js and \nultil.js scripts
+
+note over HomePage.html: add song to playlist\nbutton click
+
+HomePage.html ->AddSongToPlaylist: "POST" Ajax ?idPlaylist
+
+
+AddSongToPlaylist ->MatchDAO: insertSongInPlaylist(\nidSong, idPlaylist)
+
+MatchDAO -->AddSongToPlaylist: songInserted
+
+AddSongToPlaylist -->HomePage.html: songInserted

@@ -1,23 +1,115 @@
 (function(){
-
-    var errorMessageBox = document.getElementById("errorMessageBox");
+  
     
-    var loginBox = document.getElementById("loginBox");
-    var loginButton = loginBox.querySelector("input[type='button']");
+    var pageOrchestrator = new PageOrchestrator(); 
 
-    var registrationBox = document.getElementById("registrationBox");
-    var registrationButton = registrationBox.querySelector("input[type='button']");
+    var loginBox, registrationBox, errorMessageBox;
+    var loginButton, registrationButton;
+
+    var login, registration, errorMessage;
+    
 
     window.addEventListener("load", ()=>{
       if (sessionStorage.getItem("user") != null){
         window.location.href = "HomePage.html";
       }
+      pageOrchestrator.start();
+      pageOrchestrator.registerEvent();
+      pageOrchestrator.showLoginPage();
       
-      this.showLoginPage();
-      this.registerEvent();
 
     })
 
+    
+    //error message
+    function ErrorMessage(){
+      errorMessageBox = document.getElementById("errorMessageBox");
+      var status = errorMessageBox.querySelector("h1");
+      var message = errorMessageBox.querySelector("p");
+
+      this.show = function(){
+        errorMessageBox.style.display = 'block';
+      }
+
+      this.set = function(stat, msg){
+        status.textContent = stat;
+        message.textContent = msg;
+      }
+
+      this.hide = function(){
+        errorMessageBox.style.display = 'none';
+      }
+
+      this.registerEvent = function(){
+        errorMessageBox.querySelector("a").addEventListener("click", ()=>{
+          pageOrchestrator.showLoginPage();
+        })
+      }
+
+    }
+
+
+    //login
+    function Login(){
+      loginBox = document.getElementById("loginBox");
+      loginButton = loginBox.querySelector("input[type='button']");
+
+      this.show = function(){
+        loginBox.style.display = 'block';
+      }
+
+      this.hide = function(){
+        loginBox.style.display = 'none';
+        loginBox.querySelector(".customMsg").style.display = 'none';
+      }
+
+      this.registerEvent = function(){
+        loginButton.addEventListener('click', (e) => {
+          makeCall("POST", 'CheckLogin', e.target.closest("form"), function(req){
+            buttonCback(req, loginBox);
+          });
+        });
+
+        loginBox.querySelector("a").addEventListener('click', () =>{
+          pageOrchestrator.showRegistrationPage();
+        });
+      }
+
+    }
+
+
+    
+
+    //registration
+    function Registration(){
+      registrationBox = document.getElementById("registrationBox");
+      registrationButton = registrationBox.querySelector("input[type='button']");
+
+      this.show = function(){
+        registrationBox.style.display = 'block';
+      }
+
+      this.hide = function(){
+        registrationBox.style.display = 'none';
+        registrationBox.querySelector(".customMsg").style.display = 'none';
+      }
+
+      this.registerEvent = function(){
+        registrationButton.addEventListener('click', (e) => {
+          makeCall("POST", 'CreateUser', e.target.closest("form"), function(req){
+            buttonCback(req, registrationBox);
+          });
+        })
+
+        registrationBox.querySelector("a").addEventListener('click', () =>{
+          pageOrchestrator.showLoginPage();
+        });
+
+      }
+
+    }
+
+    //same cback event for login and registration submit button
     this.buttonCback = function(req, container){
       if (req.readyState == XMLHttpRequest.DONE){
         const msg = req.responseText;
@@ -25,68 +117,63 @@
           sessionStorage.setItem('user', msg);
           window.location.href = "HomePage.html";
         }else if (req.status == 400){
-          this.showLocalError(container, msg);
+          pageOrchestrator.showLocalError(container, msg);
         }else{
-          this.showErrorPage(req.status, msg);
+          pageOrchestrator.showErrorPage(req.status, msg);
         }
       }
     }
 
-    this.registerEvent = function(){
-      errorMessageBox.querySelector("a").addEventListener("click", ()=>{
-        this.showLoginPage();
-      })
 
-      loginBox.querySelector("a").addEventListener('click', () =>{
-        this.showRegistrationPage();
-      });
-  
-      registrationBox.querySelector("a").addEventListener('click', () =>{
-        this.showLoginPage();
-      });
+
+
+
+    //page controller
+    function PageOrchestrator(){
       
-  
-      loginButton.addEventListener('click', (e) => {
-        makeCall("POST", 'CheckLogin', e.target.closest("form"), function(req){
-          buttonCback(req, loginBox);
-        });
-      });
-  
-      registrationButton.addEventListener('click', (e) => {
-        makeCall("POST", 'CreateUser', e.target.closest("form"), function(req){
-          buttonCback(req, registrationBox);
-        });
-      })
+      this.start = function(){
 
-    }
+        login = new Login();
+        registration = new Registration();
+        errorMessage = new ErrorMessage();
+        
 
+      }
 
-    this.showLoginPage = function(){
-      this.reset();
-      loginBox.style.display = 'block';
-    }
-    this.showRegistrationPage = function(){
-      this.reset();
-      registrationBox.style.display = 'block';
-    }
-    this.showErrorPage = function(status, msg){
-      this.reset();
-      errorMessageBox.style.display = 'block';
-      errorMessageBox.querySelector("h1").textContent = status;
-      errorMessageBox.querySelector("p").textContent = msg;
-    }
+      this.showLoginPage = function(){
+        this.reset();
+        login.show();
+      }
 
-    this.showLocalError = function(container, msg){
-      var customMsg = container.querySelector(".customMsg");
-      customMsg.style.display = 'block';
-      customMsg.textContent = msg;
-    }
+      this.showRegistrationPage = function(){
+        this.reset();
+        registration.show();
+      }
 
-    this.reset = function(){
-      Array.from(document.querySelectorAll(".customMsg")).forEach(x => x.style.display = 'none');
-      errorMessageBox.style.display = 'none';
-      loginBox.style.display = 'none';
-      registrationBox.style.display = 'none';
+      this.showErrorPage = function(status, msg){
+        this.reset();
+        errorMessage.set(status, msg);
+        errorMessage.show();
+      }
+
+      this.showLocalError = function(container, msg){
+        var customMsg = container.querySelector(".customMsg");
+        customMsg.style.display = 'block';
+        customMsg.textContent = msg;
+      }
+
+      this.reset = function(){
+        login.hide();
+        registration.hide();
+        errorMessage.hide();
+      }
+
+      this.registerEvent = function(){
+        login.registerEvent();
+        registration.registerEvent();
+        errorMessage.registerEvent();
+      }
+
     }
 
 

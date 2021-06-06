@@ -1,17 +1,20 @@
 (function(){
 
-    //objects
+    //components
     var userInfo, errorMessage, userPlaylists, createAlbum, createSong, currPlaylist, currPlayer;
     var homePageBtnContainer, logoutBtnContainer;
-    var creationContainer = document.getElementById("creationContainer");
-    var playlistBox = document.getElementById("playlistBox");
-    var playerBox = document.getElementById("playerBox");
+    var creationContainer, playlistBox, playerBox;
+
+    
+
     //main controller
     var pageOrchestrator = new PageOrchestrator(); 
 
 
     window.addEventListener("load", () =>{
+        //istanciate all components
         pageOrchestrator.start();
+        
         pageOrchestrator.registerEvents();
         pageOrchestrator.showHomePage();
     })
@@ -51,6 +54,7 @@
         }
     }
 
+
     function Player(songsMap){
         var song = songsMap[0];
         var album = songsMap[1];
@@ -65,11 +69,13 @@
             var dynamicElementBox = playerBox.querySelector("div");
             dynamicElementBox.innerHTML = "";
 
+            //image song creation
             var image = document.createElement("img");
             image.src = "ShowFile/image_" + album.imageUrl;
             image.alt = album.imageUrl;
             dynamicElementBox.appendChild(image);
 
+            //audio song creation
             var audio = document.createElement("audio");
             audio.controls = true;
             var sourceAudio = document.createElement("source");
@@ -88,21 +94,18 @@
             });
         }
 
-        
-
     }
 
 
     function Playlist(playlist){        
         var customMsgPlaylist = document.getElementById("playlistName");
-        var playlistBox = document.getElementById("playlistBox");
         var addSongToPlaylistBox = document.getElementById("addSongToPlaylist");
         var customMsg = addSongToPlaylistBox.querySelector("p");
         var prevBtn = document.getElementById("prevBtn");
         var nextBtn  = document.getElementById("nextBtn");
         var addSongBtn = addSongToPlaylistBox.querySelector("input[type='button']");
 
-        var playlistSongs = new Array();
+        var playlistSongs;
         var prevIdx = 0;
         var nextIdx = 5;
         var self = this;
@@ -134,6 +137,7 @@
                 if (req.readyState == 4){
                     if(req.status == 200){
                         var songs = JSON.parse(req.responseText);
+
                         if (songs.length > 0){
                             addSongToPlaylistBox.style.display = "block";
                             var select = addSongToPlaylistBox.querySelector("select");
@@ -191,19 +195,20 @@
             }else{
                 prevBtn.style.display = 'block';
             }
-            for (let i = prevIdx; i < playlistSongs.length && i < nextIdx; i++){
+            for (let i = prevIdx; i < currSize && i < nextIdx; i++){
                 var song = playlistSongs[i][0];
                 var album = playlistSongs[i][1];
-
+                
+                //title song creation
                 var title = document.createElement("td");
                 var linkTitle = document.createElement("a");
                 linkTitle.appendChild(document.createTextNode(song.title));
                 linkTitle.addEventListener("click", this.clickSongCback(playlistSongs[i]));
-
                 linkTitle.href = "#";
                 title.appendChild(linkTitle);
                 rowHead.appendChild(title);
 
+                //image song creation
                 var imageContainer = document.createElement("td");
                 var image = document.createElement("img");
                 image.addEventListener("click", this.clickSongCback(playlistSongs[i]));
@@ -298,6 +303,7 @@
             this.reset();
             userPlaylistsBox.style.display = 'block';
             createPlaylistBox.style.display = 'block';
+
             makeCall("GET", "GetUserPlaylist", null, function(req){
                 if (req.readyState == 4){
                     if(req.status == 200){
@@ -326,6 +332,7 @@
             userPlaylistsBox.querySelector("p").innerHTML = "";
 
             playlists.forEach(function(playlist){
+                //title creation
                 var row = document.createElement("tr");
                 var nameCell = document.createElement("td");
                 var linkName = document.createElement("a");
@@ -337,13 +344,14 @@
                     currPlaylist.registerEvents();
                     pageOrchestrator.showPlaylistPage();
                 })
-                
                 row.appendChild(nameCell);
 
+                //date creation
                 var dateCell = document.createElement("td");
                 dateCell.textContent = playlist.date;
                 row.appendChild(dateCell);
 
+                //reorder link creation
                 var reorderCell = document.createElement("td");
                 var linkReorder = document.createElement("a");
                 reorderCell.appendChild(linkReorder);
@@ -355,6 +363,7 @@
                 tableBody.insertBefore(row, tableBody.firstChild);
             });
         }
+
         this.registerEvents = function(){
             createPlaylistBox.querySelector("input[type = 'button'").addEventListener("click", (e)=>{
                 makeCall("POST", "CreatePlaylist", e.target.closest("form"), function(req){
@@ -395,12 +404,19 @@
         }
         this.registerEvents = function(){
             createAlbumBox.querySelector("input[type = 'button'").addEventListener("click", (e) => {
+
+                //makes last genre selection default
+                var select = createAlbumBox.querySelector("select");
+                var optionChecked = select.querySelector("option:checked");
+                Array.from(select.querySelectorAll("option")).forEach(x => x.removeAttribute("selected"));
+                optionChecked.setAttribute("selected", "selected");
+
                 makeCall("POST", "CreateAlbum", e.target.closest("form"), function(req){
                     if (req.readyState == 4){
                         if(req.status == 200){
                             var album = JSON.parse(req.responseText);
                             createSong.updateAlbumList(album);
-                            pageOrchestrator.showLocalMessage(customMsg, "Album inserted correctly");
+                            pageOrchestrator.showLocalMessage(customMsg, "Album " + album.title + " inserted correctly");
                         }else if (req.status == 400){
                             pageOrchestrator.showLocalMessage(customMsg, req.responseText);
                         }else{
@@ -431,6 +447,9 @@
         }
 
         this.show = function(){
+            customMsg.style.display = "none";
+            createSongBox.style.display = 'block';
+
             makeCall("GET", "GetUserAlbums", null, function(req){
                 if (req.readyState == 4){
                     if(req.status == 200){
@@ -439,7 +458,6 @@
                         albums.forEach(x =>{
                             self.updateAlbumList(x)
                         });
-
                         if (albums.length > 0){
                             document.getElementById("noAlbumLabel").style.display = 'none';
                         }else{
@@ -453,8 +471,6 @@
                     }
                 }
             })
-            customMsg.style.display = "none";
-            createSongBox.style.display = 'block';
         }
 
         this.hide = function(){
@@ -463,24 +479,24 @@
 
         this.registerEvents = function(){
             createSongBox.querySelector("input[type = 'button'").addEventListener("click", (e) => {
+                //makes last album selection default
                 var select = createSongBox.querySelector("select");
                 var optionChecked = select.querySelector("option:checked");
                 Array.from(select.querySelectorAll("option")).forEach(x => x.removeAttribute("selected"));
                 optionChecked.setAttribute("selected", "selected");
 
-                var form = e.target.closest("form");
-                makeCall("POST", "CreateSong", form, function(req){
+                makeCall("POST", "CreateSong", e.target.closest("form"), function(req){
                     if (req.readyState == 4){
                         if(req.status == 200){
-                            pageOrchestrator.showLocalMessage(customMsg, "Song inserted correctly");
+                            var song = req.responseText;
+                            pageOrchestrator.showLocalMessage(customMsg, "Song " + song.title + " inserted correctly");
                         }else if (req.status == 400){
                             pageOrchestrator.showLocalMessage(customMsg, req.responseText);
                         }else{
                             pageOrchestrator.showErrorPage(req.status, req.responseText);
                         }
                     }
-                })
-                
+                }) 
             })
         }
 
@@ -493,10 +509,13 @@
 
 
     function PageOrchestrator(){
-
+        
         this.start = function(){
             homePageBtnContainer = document.getElementById("homePageBtnContainer");
             logoutBtnContainer = document.getElementById("logoutBtnContainer");
+            creationContainer = document.getElementById("creationContainer");
+            playlistBox = document.getElementById("playlistBox");
+            playerBox = document.getElementById("playerBox");
 
             userInfo = new UserInfo();
 
@@ -543,6 +562,7 @@
             container.style.display = 'block';
         }
 
+        //hides all components
         this.reset = function(){
             homePageBtnContainer.style.display = 'none';
             creationContainer.style.display = 'none';
@@ -556,14 +576,19 @@
         }
 
         this.registerEvents = function(){
-            //Button
             homePageBtnContainer.querySelector("input[type='button']").addEventListener("click", ()=>{
                 this.showHomePage();
             });
 
             logoutBtnContainer.querySelector("input[type='button']").addEventListener("click", () =>{
-                sessionStorage.removeItem("user");
-                window.location.href = "LoginPage.html";
+                makeCall("GET", "Logout", null, function(req){
+                    if (req.readyState == 4){
+                        if(req.status == 200){
+                            sessionStorage.removeItem("user");
+                            window.location.href = "LoginPage.html";  
+                        }
+                    }
+                })  
             })
 
 

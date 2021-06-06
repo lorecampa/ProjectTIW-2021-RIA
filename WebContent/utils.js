@@ -1,3 +1,5 @@
+
+
 function makeCall(method, url, formElement, cback, isForm){
     var req = new XMLHttpRequest();
 
@@ -17,7 +19,7 @@ function makeCall(method, url, formElement, cback, isForm){
             req.send(new FormData(formElement))
         }else{
             var customMsg = formElement.querySelector(".customMsg");
-            customMsg.textContent = "Form inputs not valid";
+            customMsg.textContent = "Form inputs are not valid";
             customMsg.style.display = 'block';
         }
     }
@@ -31,6 +33,8 @@ function makeCall(method, url, formElement, cback, isForm){
 
 function orderSongs(songsMap){
     if (songsMap == undefined || songsMap.length == 0) return;
+
+    //find first element
     var first;
     for (let i = 0; i < songsMap.length; i++){
         if (songsMap[i][0].idSongBefore == 0){
@@ -39,6 +43,7 @@ function orderSongs(songsMap){
             break;
         }
     }
+    //create new array and append song in order
     var songsOrdered = new Array();
     songsOrdered.push(first);
     var lastId = first[0].id;
@@ -46,13 +51,14 @@ function orderSongs(songsMap){
     while (songsMap.length != 0){
         for (let i = 0; i < songsMap.length; i++){
             if (songsMap[i][0].idSongBefore == lastId){
+                //unshift (insert at the beginning of the array) because we want DESC album date order
                 songsOrdered.unshift(songsMap[i]);
                 lastId = songsMap[i][0].id;
                 songsMap.splice(i, 1);
                 break;
             }
             if (i == songsMap.length - 1){
-                //problem
+                //problem because no song idBefore association is found
                 return;
             }
         }

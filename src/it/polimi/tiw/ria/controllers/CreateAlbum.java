@@ -68,7 +68,9 @@ public class CreateAlbum extends HttpServlet {
 				interpreter  == null || interpreter.isEmpty() ||
 				yearString == null || yearString.isEmpty() ||
 				genreString == null || genreString.isEmpty()) {
-			
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("Invalid album params");
+			return;
 			
 		}
 		
@@ -132,6 +134,7 @@ public class CreateAlbum extends HttpServlet {
 			response.getWriter().println(e.getMessage());
 			return;
 		}
+		
 		if(created == 0) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Album already present");
