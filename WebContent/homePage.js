@@ -488,7 +488,7 @@
                 makeCall("POST", "CreateSong", e.target.closest("form"), function(req){
                     if (req.readyState == 4){
                         if(req.status == 200){
-                            var song = req.responseText;
+                            var song = JSON.parse(req.responseText);
                             pageOrchestrator.showLocalMessage(customMsg, "Song " + song.title + " inserted correctly");
                         }else if (req.status == 400){
                             pageOrchestrator.showLocalMessage(customMsg, req.responseText);
